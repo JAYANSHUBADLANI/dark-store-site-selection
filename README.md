@@ -15,8 +15,8 @@ of those attacks landed, and they matter more than the original result:
 > completely: every store runs at exactly its capacity, so any 20 reachable
 > sites serve identical demand and **location does not affect the answer at
 > all**. The covering model reports 93.69% coverage while those stores can
-> physically serve **10.8%** of demand. Location only starts to decide anything
-> at around **180 to 200 stores**.
+> physically serve **14.7%** of demand. Location only starts to decide anything
+> at around **120 to 140 stores**.
 >
 > **2. The headline comparison was a straw man.** Routing on the real network
 > beats a **properly calibrated** straight line approximation by 2.8 to 7.9
@@ -42,11 +42,21 @@ it, so I swept it rather than inventing one. Placing 20 stores:
 
 | capacity per store per month | demand served | capacity ceiling | utilisation | sites shared with the covering solution |
 |---:|---:|---:|---:|---:|
-| 10,000 | 3.61% | 3.61% | 1.000 | 1 of 20 |
 | 20,000 | 7.21% | 7.21% | 1.000 | 1 of 20 |
 | 30,000 | 10.82% | 10.82% | 1.000 | 1 of 20 |
-| 40,000 | 14.42% | 14.42% | 1.000 | 0 of 20 |
+| **40,700** | **14.67%** | 14.67% | 1.000 | 0 of 20 |
 | 60,000 | 21.63% | 21.63% | 1.000 | 0 of 20 |
+| 80,000 | 28.84% | 28.84% | 1.000 | 0 of 20 |
+
+The 40,700 row is the anchor, and unlike most numbers in this section it is
+derived rather than assumed: Blinkit reported 273.9 million orders in Q4 FY26
+across 2,243 dark stores, which is roughly 40,700 orders per store per month.
+Four caveats travel with it and they are in `config/config.yaml` in full: it is
+**observed average throughput, not a capacity ceiling**, so using it as a hard
+cap is conservative; it is a national average, not Bengaluru; it is the market
+leader, so smaller operators run lower; and I could not open the primary filing,
+only several independent outlets reporting the same shareholders letter and
+agreeing. The sweep stays for that reason.
 
 **Served demand equals the capacity ceiling exactly, at every level, with
 utilisation of 1.000.** Every store fills up. That has a blunt consequence: at
@@ -57,7 +67,7 @@ solution share 0 or 1 sites out of 20 and it does not matter, because they serve
 identical volume.
 
 So the model that reports 93.69% coverage describes 20 stores that can serve
-**10.8%** of demand.
+**14.7%** of demand.
 
 ### Where the constraint actually flips
 
@@ -66,19 +76,19 @@ reachable demand to fill them all.
 
 | stores | served | ceiling | utilisation | binding constraint |
 |---:|---:|---:|---:|---|
-| 20 | 10.82% | 10.82% | 1.000 | capacity |
-| 60 | 32.45% | 32.45% | 1.000 | capacity |
-| 100 | 54.08% | 54.08% | 1.000 | capacity |
-| 140 | 75.71% | 75.71% | 1.000 | capacity |
-| 180 | 97.34% | 97.34% | 1.000 | capacity |
-| 200 | 98.24% | 100% | 0.908 | **reach** |
+| 20 | 14.67% | 14.67% | 1.000 | capacity |
+| 60 | 44.02% | 44.02% | 1.000 | capacity |
+| 100 | 73.37% | 73.37% | 1.000 | capacity |
+| 120 | 88.04% | 88.04% | 1.000 | capacity |
+| 140 | 98.13% | 100% | 0.955 | **reach** |
+| 200 | 98.24% | 100% | 0.670 | reach |
 
-**Reach begins to bind between 180 and 200 stores**, at 30,000 orders per store
+**Reach begins to bind between 120 and 140 stores**, at 40,700 orders per store
 per month. That single number reconciles the whole repository:
 
-- **Below roughly 180 stores, this is not a siting problem.** It is a store count
+- **Below roughly 120 stores, this is not a siting problem.** It is a store count
   problem, and the answer is arithmetic: demand divided by throughput. 25% of the
-  market needs 47 stores, 50% needs 93, 90% needs 167. All the covering
+  market needs 35 stores, 50% needs 69, 90% needs 123. All the covering
   machinery, the road network, the Dijkstra pruning, the circuity analysis, is
   answering a question that is not binding.
 - **Above it, the covering model is the right tool**, and everything else in this
@@ -88,10 +98,11 @@ The store count where this flips is close to the scale the real Bengaluru market
 operates at across all players, which is a reassuring sanity check on the order
 of magnitude, though not a validation of any specific number.
 
-**Caveat that limits all of this:** the capacity figure is swept, not sourced. The
-crossover point scales inversely with it. What does not depend on the capacity
-number is the structural finding: there is a store count below which location is
-irrelevant, and a covering model cannot tell you whether you are below it.
+**Caveat that limits all of this:** the crossover scales inversely with the
+throughput figure. At 30,000 orders per store it sits near 180 stores; at 40,700
+it sits near 130. What does not depend on that number is the structural finding:
+there is a store count below which location is irrelevant, and a covering model
+cannot tell you whether you are below it.
 
 ## The result I first got, and why I did not keep it
 
@@ -447,44 +458,54 @@ Identical coverage, identical reachable pair counts, identical site selection.
 **The sensitivity analysis has one degree of freedom where it looked like it had
 four.**
 
-### Grid resolution: the base case holds, the coarse grid does not
+### Grid resolution: the coverage number converges, the sites do not
 
 A 500m cell is 1.67 minutes of travel at 18 km/h, so the coverage boundary is
-only resolved to within a couple of minutes. I reran the whole selection at 250m
-and 1000m, holding the candidate set fixed so only the demand representation
-changes.
+only resolved to within a couple of minutes. I reran the whole selection at
+125m, 250m and 1000m, holding the candidate set fixed so only the demand
+representation changes.
 
 | cell size | cells | coverage | identical sites vs base | median site shift | within 1 km |
 |---:|---:|---:|---:|---:|---:|
+| 125 m | 37,350 | 92.22% | 8 of 20 | 766 m | 16 of 20 |
 | 250 m | 9,921 | 92.73% | 10 of 20 | 355 m | 17 of 20 |
 | 500 m | 2,597 | 93.69% | base | | |
 | 1000 m | 675 | 95.15% | 4 of 20 | 789 m | 13 of 20 |
 
-Two things to read here.
+All four solves proved optimality, the finest in 54.9 seconds.
 
-**Coverage rises as the grid coarsens, and that is an artefact, not a
-finding.** A cell counts as covered when a store reaches it, so a 1000m cell
-credits a full square kilometre of demand to a store that reaches its centre.
-The coarser the grid, the more generous the accounting. It follows that the
-93.69% quoted throughout this README is itself mildly inflated, and the 250m
-figure of **92.73% is the more honest number**. The effect is small here, 2.4
-points across a fourfold change in cell size, but it is systematic and in a known
-direction.
+**The coverage estimate converges cleanly.** Successive refinements change it by
+less each time, and by almost exactly half each time:
 
-**Site selection is converging.** Refining to 250m moves the median site 355m;
-coarsening to 1000m moves it 789m. Refining moves the answer less than
-coarsening does, which is what convergence looks like, and 355m is below the
-400m minimum separation between candidates, so it is smaller than the finest
-distinction the candidate set can express at all. The 500m base case sits on the
-settled side of that. The 1000m grid does not, and should not be used.
+| refinement | change in coverage |
+|---|---:|
+| 1000 m to 500 m | -0.0146 |
+| 500 m to 250 m | -0.0097 |
+| 250 m to 125 m | -0.0050 |
 
-I should be careful about how much that establishes. Two resolutions either side
-of the base case are consistent with convergence; they do not prove it. Confirming
-the trend would need a 125m run, which I have not done.
+That is what a well behaved discretisation looks like, and it extrapolates to a
+converged value near 92%. It also shows the direction of the bias: coarser grids
+credit more demand as covered, because a 1000m cell hands a full square
+kilometre to a store that only reaches its centroid. **The 93.69% quoted
+throughout this README is therefore mildly optimistic, and 92.22% at 125m is the
+more honest figure.**
 
-This does rehabilitate one thing though. The site instability reported above is
-**not** coming from the grid. It comes from the effective radius, which is the
-next section.
+**The site selection does not converge.** The median site shift is 355m at 250m
+but 766m at 125m, which is not a sequence settling down, and 766m is well above
+the 400m separation floor between candidates, so it is not an artefact of
+candidate granularity either.
+
+I had earlier concluded from the 250m and 1000m runs alone that the sites were
+converging. The 125m run falsifies that, and the way it was hidden is worth
+recording: my first version of this check took the **minimum** shift across the
+finer grids, which reports only the grid that happens to agree. It now takes the
+worst.
+
+So the honest statement is a split one: **the optimum value is well determined
+and the optimum argument is not.** That is consistent with everything else in
+this repository, since a covering problem with many near optimal solutions will
+have a stable objective and an unstable argmax, and it is another reason not to
+hand over the 20 pins.
 
 ### So what should someone actually do with this
 
@@ -496,8 +517,8 @@ What it does support is narrower and more useful:
 0. **Check whether you are even in the siting regime.** Divide demand by store
    throughput. If that number is far above your planned store count, location is
    not your constraint and no amount of spatial optimisation will change your
-   served volume. On these figures that threshold is around 180 stores, and a
-   20 store plan is nowhere near it.
+   served volume. On these figures that threshold is around 120 to 140 stores,
+   and a 20 store plan is nowhere near it.
 1. **Then pin down the effective delivery radius.** It is the only spatial input
    that materially decides the answer, and it is measurable: it comes out of
    rider GPS traces, not out of a workshop. Every hour spent refining the demand
@@ -506,9 +527,8 @@ What it does support is narrower and more useful:
    how many stores to open. It does not change where they go.
 3. **Treat network routing as worth 3 to 8 points**, not 35, and decide whether
    building that pipeline is worth it on those terms.
-4. **Do not run this on a 1 km grid.** It inflates reported coverage and it moves
-   the sites. 500m is adequate here, 250m is safer, and the reported coverage
-   should be read as the optimistic end of a 2.4 point band.
+4. **Do not run this on a 1 km grid**, and read the coverage figure as
+   converging to roughly 92% rather than the 93.69% the 500m grid reports.
 
 That is a smaller claim than the one I set out to make, and it is the one the
 evidence supports.
@@ -523,19 +543,19 @@ evidence supports.
   The residual gain is real but modest, and anyone deciding whether to build a
   routing pipeline should weigh it against that number rather than the headline
   the uncalibrated comparison produces.
-- **Store throughput is swept, not sourced.** The capacity analysis above rests
-  on a range I chose from an order of magnitude argument, not a cited figure. The
-  180 store crossover scales inversely with it, so treat that number as a
-  structure rather than an estimate.
+- **Store throughput is an observed average, not a capacity ceiling.** The
+  anchor figure comes from disclosed order volumes divided by disclosed store
+  counts, so it is what stores actually do rather than what they could do. Real
+  capacity is higher, which pushes the crossover to fewer stores than the 120 to
+  140 reported here.
 - **The 2020 population raster biases the answer directionally, not just in
   level.** Bengaluru's periphery has grown faster than its core since 2020, so an
   unadjusted 2020 surface understates the periphery specifically and tilts site
   selection toward the centre.
 - **Reported coverage carries a resolution bias.** Coarser grids credit more
-  demand as covered, so the headline 93.69% is the optimistic end of a 2.4 point
-  band and 92.73% at 250m is the more honest figure. Convergence toward finer
-  resolutions is consistent with the two runs either side of the base case but
-  is not proven; that would need a 125m run.
+  demand as covered, so the headline 93.69% is optimistic and the converged
+  value is near 92%. The site selection does not converge at all across
+  resolutions, which is a separate and more serious problem than the bias.
 - **The adoption curve is judgemental.** Its four rate bands are the least
   defensible numbers here, and site selection depends on them.
 - **The population raster is the 2020 epoch.** Bengaluru has grown since, so
@@ -587,8 +607,7 @@ tests/                 18 tests
 ## Status
 
 Phases 1 to 5 and six robustness checks are complete, and every number above
-comes from a run. Still outstanding: a sourced throughput figure, a 125m run to
-confirm grid convergence, and the written decision memo. See `PROGRESS.md`.
+comes from a run. See `PROGRESS.md` for what is left.
 
 ## Data sources
 

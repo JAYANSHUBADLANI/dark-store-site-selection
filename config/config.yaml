@@ -114,16 +114,31 @@ capacity:
   # model assumes it can. Coverage means a store can reach a cell, not that it
   # can fulfil it.
   #
-  # I do not have a sourced throughput figure, so this is deliberately swept
-  # rather than fixed. The range is set from the order of magnitude implied by
-  # listed players' disclosed national order volumes divided by their disclosed
-  # store counts, which lands in the low tens of thousands of orders per store
-  # per month. Treat every absolute number downstream of this as a scenario, not
-  # an estimate.
-  orders_per_store_per_month_sweep: [10000, 20000, 30000, 40000, 60000]
-  # The value used when a single number is needed, for example in the headline
-  # comparison against the uncapacitated result.
-  orders_per_store_per_month: 30000
+  # Anchor figure, derived rather than assumed:
+  #   Blinkit Q4 FY26, 273.9 million orders in the quarter, 2,243 dark stores at
+  #   quarter end (Eternal Ltd Q4 FY26 shareholders letter, reported April 2026).
+  #   273.9e6 / 3 months / 2,243 stores = roughly 40,700 orders per store per
+  #   month. Using the average store count over the quarter instead of the
+  #   closing count, since 216 stores were added during it, gives about 42,800.
+  #
+  # Four things this figure is not, all of which matter:
+  #   1. It is observed average throughput, not a capacity ceiling. A store's
+  #      physical limit is higher than what it actually does on an average day,
+  #      so using this as a hard cap is conservative and pushes the crossover
+  #      store count upward.
+  #   2. It is a national average. Bengaluru stores are not necessarily typical.
+  #   3. It is the market leader. Smaller operators very likely run lower.
+  #   4. I could not verify it against the primary filing directly. The figures
+  #      come from several independent outlets reporting the same shareholders
+  #      letter and agreeing with each other, which is weaker than reading the
+  #      document.
+  #
+  # The sweep stays, because a single number here would carry more weight than
+  # its provenance supports.
+  orders_per_store_per_month_sweep: [20000, 30000, 40700, 60000, 80000]
+  # The anchor above, used where a single number is needed.
+  orders_per_store_per_month: 40700
+  source_note: "Blinkit Q4 FY26: 273.9M orders, 2,243 stores. Observed average, not a ceiling."
 
 optimisation:
   # Number of dark stores to place. This is the budget the memo answers for.
@@ -141,7 +156,7 @@ sensitivity:
   effective_speed_kmph: [12.0, 15.0, 18.0, 22.0, 26.0]
   delivery_threshold_min: [8.0, 10.0, 12.0, 15.0]
   n_stores: [5, 10, 15, 20, 30, 40]
-  grid_resolutions_m: [250, 500, 1000]
+  grid_resolutions_m: [125, 250, 500, 1000]
   # Adoption curve shifted flatter and steeper than the base case, to test how
   # much the answer depends on the least defensible assumption in the project.
   adoption_variants: ["flat", "base", "steep"]

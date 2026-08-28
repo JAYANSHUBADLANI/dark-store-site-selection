@@ -3,6 +3,43 @@
   "n_stores": 20,
   "resolutions": [
     {
+      "cell_size_m": 125.0,
+      "cells": 37350,
+      "total_population": 11872008.552734662,
+      "total_orders_per_month": 5625770.796557063,
+      "orders_share_dropped_by_filter": 1.5820196008308045e-05,
+      "coverage_share": 0.9222384989649651,
+      "proved_optimal": true,
+      "solve_runtime_s": 54.92,
+      "selected": [
+        12,
+        28,
+        75,
+        93,
+        109,
+        114,
+        128,
+        151,
+        153,
+        205,
+        221,
+        224,
+        247,
+        251,
+        261,
+        312,
+        321,
+        339,
+        358,
+        399
+      ],
+      "step_runtime_s": 61.4,
+      "sites_shared_with_base": 8,
+      "median_shift_m": 765.7093760320581,
+      "max_shift_m": 1553.6219112463948,
+      "base_sites_within_1km": 16
+    },
+    {
       "cell_size_m": 250.0,
       "cells": 9921,
       "total_population": 11867874.046312824,
@@ -10,7 +47,7 @@
       "orders_share_dropped_by_filter": 1.6239719325424036e-05,
       "coverage_share": 0.92725844219937,
       "proved_optimal": true,
-      "solve_runtime_s": 21.2,
+      "solve_runtime_s": 22.28,
       "selected": [
         12,
         28,
@@ -33,7 +70,7 @@
         358,
         366
       ],
-      "step_runtime_s": 26.8,
+      "step_runtime_s": 28.0,
       "sites_shared_with_base": 10,
       "median_shift_m": 355.0956131332955,
       "max_shift_m": 1218.1920451362998,
@@ -47,7 +84,7 @@
       "orders_share_dropped_by_filter": 1.6383723216061042e-05,
       "coverage_share": 0.9369279288769194,
       "proved_optimal": true,
-      "solve_runtime_s": 2.3,
+      "solve_runtime_s": 2.27,
       "selected": [
         9,
         29,
@@ -70,7 +107,7 @@
         358,
         366
       ],
-      "step_runtime_s": 7.9,
+      "step_runtime_s": 8.2,
       "sites_shared_with_base": 20,
       "median_shift_m": 0.0,
       "max_shift_m": 0.0
@@ -106,19 +143,37 @@
         345,
         399
       ],
-      "step_runtime_s": 6.0,
+      "step_runtime_s": 6.1,
       "sites_shared_with_base": 4,
       "median_shift_m": 789.0953429277157,
       "max_shift_m": 2138.421885177505,
       "base_sites_within_1km": 13
     }
   ],
-  "coverage_spread": 0.024275865212302516,
+  "coverage_spread": 0.029295808446707428,
   "worst_median_shift_m": 789.0953429277157,
   "candidate_separation_floor_m": 400.0,
-  "shift_when_refining_m": 355.0956131332955,
+  "coverage_steps": [
+    {
+      "from_m": 1000.0,
+      "to_m": 500.0,
+      "delta": -0.014606378534753106
+    },
+    {
+      "from_m": 500.0,
+      "to_m": 250.0,
+      "delta": -0.00966948667754941
+    },
+    {
+      "from_m": 250.0,
+      "to_m": 125.0,
+      "delta": -0.005019943234404911
+    }
+  ],
+  "coverage_converging": true,
+  "worst_shift_among_finer_grids_m": 765.7093760320581,
   "shift_when_coarsening_m": 789.0953429277157,
-  "converging_with_resolution": true,
-  "verdict": "adequate at the base resolution: refining moves the answer less than the candidate separation floor, and less than coarsening does, so the solution is converging and the coarsest grid is the unreliable one",
-  "runtime_s": 50.3
+  "sites_stable_under_refinement": false,
+  "verdict": "the coverage estimate converges but the site selection does not. Successive refinements change coverage by less each time, so the optimum value is well determined, while the chosen sites keep moving by more than the candidate separation, so the optimum argument is not. Trust the number, not the pins.",
+  "runtime_s": 113.5
 }

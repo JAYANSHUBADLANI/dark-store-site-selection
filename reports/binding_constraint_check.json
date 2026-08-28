@@ -1,89 +1,89 @@
 {
-  "capacity_per_store": 30000.0,
+  "capacity_per_store": 40700.0,
   "total_demand": 5547355.989471666,
   "n_candidates": 400,
   "sweep": [
     {
       "n_stores": 20,
-      "served_share": 0.1081596351207387,
-      "capacity_ceiling_share": 0.10815963517371895,
-      "capacity_utilisation": 0.9999999995101663,
-      "binding_constraint": "capacity",
-      "runtime_s": 0.54
-    },
-    {
-      "n_stores": 40,
-      "served_share": 0.21631927023920616,
-      "capacity_ceiling_share": 0.2163192703474379,
-      "capacity_utilisation": 0.9999999994996668,
-      "binding_constraint": "capacity",
-      "runtime_s": 0.46
-    },
-    {
-      "n_stores": 60,
-      "served_share": 0.324478905058973,
-      "capacity_ceiling_share": 0.3244789055211568,
-      "capacity_utilisation": 0.999999998575612,
-      "binding_constraint": "capacity",
-      "runtime_s": 0.46
-    },
-    {
-      "n_stores": 80,
-      "served_share": 0.4326385407920748,
-      "capacity_ceiling_share": 0.4326385406948758,
-      "capacity_utilisation": 1.0000000002246656,
-      "binding_constraint": "capacity",
-      "runtime_s": 0.46
-    },
-    {
-      "n_stores": 100,
-      "served_share": 0.5407981756087586,
-      "capacity_ceiling_share": 0.5407981758685947,
-      "capacity_utilisation": 0.9999999995195324,
-      "binding_constraint": "capacity",
-      "runtime_s": 0.47
-    },
-    {
-      "n_stores": 120,
-      "served_share": 0.6489578106683873,
-      "capacity_ceiling_share": 0.6489578110423136,
-      "capacity_utilisation": 0.9999999994238049,
+      "served_share": 0.14673657147797828,
+      "capacity_ceiling_share": 0.14673657171901203,
+      "capacity_utilisation": 0.999999998357371,
       "binding_constraint": "capacity",
       "runtime_s": 0.5
     },
     {
-      "n_stores": 140,
-      "served_share": 0.7571174458156431,
-      "capacity_ceiling_share": 0.7571174462160326,
-      "capacity_utilisation": 0.999999999471166,
+      "n_stores": 40,
+      "served_share": 0.29347314351887355,
+      "capacity_ceiling_share": 0.29347314343802405,
+      "capacity_utilisation": 1.0000000002754919,
       "binding_constraint": "capacity",
-      "runtime_s": 0.52
+      "runtime_s": 0.51
+    },
+    {
+      "n_stores": 60,
+      "served_share": 0.44020971494322236,
+      "capacity_ceiling_share": 0.4402097151570361,
+      "capacity_utilisation": 0.9999999995142913,
+      "binding_constraint": "capacity",
+      "runtime_s": 0.5
+    },
+    {
+      "n_stores": 80,
+      "served_share": 0.5869462863130948,
+      "capacity_ceiling_share": 0.5869462868760481,
+      "capacity_utilisation": 0.9999999990408777,
+      "binding_constraint": "capacity",
+      "runtime_s": 0.55
+    },
+    {
+      "n_stores": 100,
+      "served_share": 0.7336828584016883,
+      "capacity_ceiling_share": 0.7336828585950601,
+      "capacity_utilisation": 0.9999999997364368,
+      "binding_constraint": "capacity",
+      "runtime_s": 0.58
+    },
+    {
+      "n_stores": 120,
+      "served_share": 0.8804194300726421,
+      "capacity_ceiling_share": 0.8804194303140722,
+      "capacity_utilisation": 0.9999999997257784,
+      "binding_constraint": "capacity",
+      "runtime_s": 0.71
+    },
+    {
+      "n_stores": 140,
+      "served_share": 0.9812653455033054,
+      "capacity_ceiling_share": 1.027156002033084,
+      "capacity_utilisation": 0.9553226029552025,
+      "binding_constraint": "reach",
+      "runtime_s": 5.36
     },
     {
       "n_stores": 160,
-      "served_share": 0.8652770808881785,
-      "capacity_ceiling_share": 0.8652770813897516,
-      "capacity_utilisation": 0.9999999994203325,
-      "binding_constraint": "capacity",
-      "runtime_s": 1.02
+      "served_share": 0.9823718966984417,
+      "capacity_ceiling_share": 1.1738925737520962,
+      "capacity_utilisation": 0.8368499117074234,
+      "binding_constraint": "reach",
+      "runtime_s": 4.46
     },
     {
       "n_stores": 180,
-      "served_share": 0.9734367162850226,
-      "capacity_ceiling_share": 0.9734367165634704,
-      "capacity_utilisation": 0.9999999997139537,
-      "binding_constraint": "capacity",
-      "runtime_s": 2.99
+      "served_share": 0.9823972310573469,
+      "capacity_ceiling_share": 1.3206291454711083,
+      "capacity_utilisation": 0.743885771737149,
+      "binding_constraint": "reach",
+      "runtime_s": 3.82
     },
     {
       "n_stores": 200,
-      "served_share": 0.98238245872648,
-      "capacity_ceiling_share": 1.0815963517371894,
-      "capacity_utilisation": 0.9082708693947067,
+      "served_share": 0.9824112795253803,
+      "capacity_ceiling_share": 1.4673657171901202,
+      "capacity_utilisation": 0.6695067685011844,
       "binding_constraint": "reach",
-      "runtime_s": 3.58
+      "runtime_s": 1.9
     }
   ],
-  "crossover_n_stores": 200,
-  "message": "reach begins to bind somewhere between 180 and 200 stores. Below that, store count decides the answer and location barely matters. Above it, the covering model is the right tool."
+  "crossover_n_stores": 140,
+  "message": "reach begins to bind somewhere between 120 and 140 stores. Below that, store count decides the answer and location barely matters. Above it, the covering model is the right tool."
 }
