@@ -36,7 +36,7 @@
     "covered_cells": 1041,
     "unreachable_cells": 1129,
     "objective_value": 5197472.757958665,
-    "runtime_s": 1.1
+    "runtime_s": 1.5
   },
   "network_greedy": {
     "method": "greedy",
@@ -126,5 +126,5 @@
       "coverage_share": 0.9813222270312314
     }
   ],
-  "runtime_s": 2.5
+  "runtime_s": 3.0
 }

@@ -587,7 +587,21 @@ make map         # interactive map for exploring, not committed
 make test        # 23 tests
 ```
 
-`make demo` runs fetch through figures end to end.
+`make demo` reproduces everything this README reports, in roughly ten minutes.
+`make quick` runs the phases only, in about four.
+
+### It has actually been tested
+
+I deleted every derived artefact, including the cached road network, and ran
+`make demo` from scratch. It exited cleanly, re-pulled the 155,545 node network
+from OpenStreetMap, and regenerated all ten report files **bit for bit identical**
+to the versions committed here, comparing every numeric field. Nothing in this
+README depends on state that only exists on the machine it was built on.
+
+That test found one real problem, which is why it was worth running: `make demo`
+did not run the robustness checks, so a reader could reproduce the phases but
+not the circuity calibration that the headline result comes from. `demo` now
+includes them, and `quick` is the phases-only target.
 
 Raw rasters, the cached road network and the travel time matrices stay out of
 version control. `scripts/fetch_data.py` reproduces the only external download.
@@ -608,6 +622,7 @@ scripts/               one runner per phase, plus six robustness checks:
                        stability, effective radius, grid resolution,
                        binding constraint
 docs/decision_memo.md  the memo this was built to produce
+Makefile               make demo reproduces every number in this README
 reports/               summary JSON per phase and per check, figures
 tests/                 23 tests
 ```

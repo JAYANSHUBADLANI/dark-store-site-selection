@@ -1,7 +1,7 @@
 VENV := .venv
 PY := $(VENV)/bin/python
 
-.PHONY: help setup fetch phase1 phase2 phase3 phase4 phase5 robustness grid figures map demo test lint clean
+.PHONY: help setup fetch phase1 phase2 phase3 phase4 phase5 robustness grid figures map demo quick test lint clean
 
 help:
 	@echo "setup   create the virtualenv and install dependencies"
@@ -14,7 +14,8 @@ help:
 	@echo "grid    rerun at 125m, 250m, 500m and 1000m"
 	@echo "figures every figure in the README"
 	@echo "map     interactive map, written to reports/ and not committed"
-	@echo "demo    fetch and every phase, end to end"
+	@echo "quick   fetch and the phases only, roughly 4 minutes"
+	@echo "demo    everything the README reports, roughly 10 minutes"
 	@echo "test    run the test suite"
 	@echo "lint    pyflakes and black --check"
 
@@ -57,7 +58,15 @@ map:
 figures:
 	$(PY) scripts/make_figures.py
 
-demo: fetch phase1 phase2 phase3 phase4 phase5 figures
+quick: fetch phase1 phase2 phase3 phase4 phase5 figures
+	@echo ""
+	@echo "Phases done. This does NOT run the robustness checks, and several"
+	@echo "headline numbers in the README come from those. Run make demo for all."
+
+# Everything the README reports, so a reader can reproduce the headline rather
+# than only the phases. The robustness checks are not optional extras here: the
+# circuity calibration is where the headline comparison comes from.
+demo: fetch phase1 phase2 phase3 phase4 phase5 robustness grid figures
 	@echo ""
 	@echo "Done. Summaries in reports/, figures in reports/figures/."
 

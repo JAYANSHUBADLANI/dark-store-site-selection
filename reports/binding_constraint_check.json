@@ -9,7 +9,7 @@
       "capacity_ceiling_share": 0.14673657171901203,
       "capacity_utilisation": 0.999999998357371,
       "binding_constraint": "capacity",
-      "runtime_s": 0.5
+      "runtime_s": 0.49
     },
     {
       "n_stores": 40,
@@ -17,7 +17,7 @@
       "capacity_ceiling_share": 0.29347314343802405,
       "capacity_utilisation": 1.0000000002754919,
       "binding_constraint": "capacity",
-      "runtime_s": 0.51
+      "runtime_s": 0.48
     },
     {
       "n_stores": 60,
@@ -25,7 +25,7 @@
       "capacity_ceiling_share": 0.4402097151570361,
       "capacity_utilisation": 0.9999999995142913,
       "binding_constraint": "capacity",
-      "runtime_s": 0.5
+      "runtime_s": 0.48
     },
     {
       "n_stores": 80,
@@ -33,7 +33,7 @@
       "capacity_ceiling_share": 0.5869462868760481,
       "capacity_utilisation": 0.9999999990408777,
       "binding_constraint": "capacity",
-      "runtime_s": 0.55
+      "runtime_s": 0.53
     },
     {
       "n_stores": 100,
@@ -41,7 +41,7 @@
       "capacity_ceiling_share": 0.7336828585950601,
       "capacity_utilisation": 0.9999999997364368,
       "binding_constraint": "capacity",
-      "runtime_s": 0.58
+      "runtime_s": 0.56
     },
     {
       "n_stores": 120,
@@ -49,7 +49,7 @@
       "capacity_ceiling_share": 0.8804194303140722,
       "capacity_utilisation": 0.9999999997257784,
       "binding_constraint": "capacity",
-      "runtime_s": 0.71
+      "runtime_s": 0.69
     },
     {
       "n_stores": 140,
@@ -57,7 +57,7 @@
       "capacity_ceiling_share": 1.027156002033084,
       "capacity_utilisation": 0.9553226029552025,
       "binding_constraint": "reach",
-      "runtime_s": 5.36
+      "runtime_s": 5.3
     },
     {
       "n_stores": 160,
@@ -65,7 +65,7 @@
       "capacity_ceiling_share": 1.1738925737520962,
       "capacity_utilisation": 0.8368499117074234,
       "binding_constraint": "reach",
-      "runtime_s": 4.46
+      "runtime_s": 4.38
     },
     {
       "n_stores": 180,
@@ -73,7 +73,7 @@
       "capacity_ceiling_share": 1.3206291454711083,
       "capacity_utilisation": 0.743885771737149,
       "binding_constraint": "reach",
-      "runtime_s": 3.82
+      "runtime_s": 3.7
     },
     {
       "n_stores": 200,
@@ -81,7 +81,7 @@
       "capacity_ceiling_share": 1.4673657171901202,
       "capacity_utilisation": 0.6695067685011844,
       "binding_constraint": "reach",
-      "runtime_s": 1.9
+      "runtime_s": 1.84
     }
   ],
   "crossover_n_stores": 140,

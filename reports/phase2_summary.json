@@ -33,7 +33,7 @@
       2597
     ],
     "cutoff_min": 16.0,
-    "build_seconds": 5.2,
+    "build_seconds": 5.8,
     "nodes_expanded": 4060456,
     "nodes_possible": 62218000,
     "pruning_ratio": 0.9347382429522003
@@ -53,5 +53,5 @@
     "demand_reachable_by_any_straight": 0.9881569875976853,
     "median_network_over_straight_time_ratio": 1.3185687653141642
   },
-  "runtime_s": 17.9
+  "runtime_s": 86.3
 }

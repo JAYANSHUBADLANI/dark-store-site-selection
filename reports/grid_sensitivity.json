@@ -10,7 +10,7 @@
       "orders_share_dropped_by_filter": 1.5820196008308045e-05,
       "coverage_share": 0.9222384989649651,
       "proved_optimal": true,
-      "solve_runtime_s": 54.92,
+      "solve_runtime_s": 54.75,
       "selected": [
         12,
         28,
@@ -33,7 +33,7 @@
         358,
         399
       ],
-      "step_runtime_s": 61.4,
+      "step_runtime_s": 61.1,
       "sites_shared_with_base": 8,
       "median_shift_m": 765.7093760320581,
       "max_shift_m": 1553.6219112463948,
@@ -47,7 +47,7 @@
       "orders_share_dropped_by_filter": 1.6239719325424036e-05,
       "coverage_share": 0.92725844219937,
       "proved_optimal": true,
-      "solve_runtime_s": 22.28,
+      "solve_runtime_s": 21.94,
       "selected": [
         12,
         28,
@@ -70,7 +70,7 @@
         358,
         366
       ],
-      "step_runtime_s": 28.0,
+      "step_runtime_s": 27.6,
       "sites_shared_with_base": 10,
       "median_shift_m": 355.0956131332955,
       "max_shift_m": 1218.1920451362998,
@@ -84,7 +84,7 @@
       "orders_share_dropped_by_filter": 1.6383723216061042e-05,
       "coverage_share": 0.9369279288769194,
       "proved_optimal": true,
-      "solve_runtime_s": 2.27,
+      "solve_runtime_s": 2.24,
       "selected": [
         9,
         29,
@@ -107,7 +107,7 @@
         358,
         366
       ],
-      "step_runtime_s": 8.2,
+      "step_runtime_s": 7.7,
       "sites_shared_with_base": 20,
       "median_shift_m": 0.0,
       "max_shift_m": 0.0
@@ -120,7 +120,7 @@
       "orders_share_dropped_by_filter": 1.1714960990338517e-05,
       "coverage_share": 0.9515343074116726,
       "proved_optimal": true,
-      "solve_runtime_s": 0.66,
+      "solve_runtime_s": 0.67,
       "selected": [
         12,
         56,
@@ -175,5 +175,5 @@
   "shift_when_coarsening_m": 789.0953429277157,
   "sites_stable_under_refinement": false,
   "verdict": "the coverage estimate converges but the site selection does not. Successive refinements change coverage by less each time, so the optimum value is well determined, while the chosen sites keep moving by more than the candidate separation, so the optimum argument is not. Trust the number, not the pins.",
-  "runtime_s": 113.5
+  "runtime_s": 111.6
 }

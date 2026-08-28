@@ -33,6 +33,6 @@
     "total_orders_per_month": 5547355.989471666,
     "max_cell_orders_per_month": 18184.53441822141
   },
-  "runtime_s": 0.3,
+  "runtime_s": 3.8,
   "output_file": "data/processed/demand_surface.gpkg"
 }

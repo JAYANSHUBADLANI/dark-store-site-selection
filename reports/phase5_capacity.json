@@ -35,7 +35,7 @@
         282,
         317
       ],
-      "runtime_s": 0.41,
+      "runtime_s": 0.39,
       "proved_optimal": true
     },
     {
@@ -67,7 +67,7 @@
         282,
         317
       ],
-      "runtime_s": 0.5,
+      "runtime_s": 0.49,
       "proved_optimal": true
     },
     {
@@ -99,7 +99,7 @@
         317,
         362
       ],
-      "runtime_s": 0.5,
+      "runtime_s": 0.49,
       "proved_optimal": true
     },
     {
@@ -131,7 +131,7 @@
         282,
         317
       ],
-      "runtime_s": 0.49,
+      "runtime_s": 0.47,
       "proved_optimal": true
     },
     {
@@ -163,7 +163,7 @@
         282,
         317
       ],
-      "runtime_s": 0.45,
+      "runtime_s": 0.44,
       "proved_optimal": true
     }
   ],
@@ -186,5 +186,5 @@
     }
   ],
   "verdict": "throughput binds, not reach: coverage was answering the wrong question",
-  "runtime_s": 4.7
+  "runtime_s": 4.5
 }
