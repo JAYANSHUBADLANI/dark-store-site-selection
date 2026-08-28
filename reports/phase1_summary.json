@@ -15,7 +15,9 @@
     "capture_ratio_vs_window": 0.9095467432216826
   },
   "low_demand_filter": {
+    "threshold_density_per_km2": 100.0,
     "threshold_population": 25.0,
+    "cell_area_km2": 0.25,
     "cells_before": 2867,
     "cells_after": 2597,
     "cells_dropped": 270,
@@ -31,6 +33,6 @@
     "total_orders_per_month": 5547355.989471666,
     "max_cell_orders_per_month": 18184.53441822141
   },
-  "runtime_s": 4.9,
+  "runtime_s": 0.3,
   "output_file": "data/processed/demand_surface.gpkg"
 }

@@ -377,6 +377,45 @@ Identical coverage, identical reachable pair counts, identical site selection.
 **The sensitivity analysis has one degree of freedom where it looked like it had
 four.**
 
+### Grid resolution: the base case holds, the coarse grid does not
+
+A 500m cell is 1.67 minutes of travel at 18 km/h, so the coverage boundary is
+only resolved to within a couple of minutes. I reran the whole selection at 250m
+and 1000m, holding the candidate set fixed so only the demand representation
+changes.
+
+| cell size | cells | coverage | identical sites vs base | median site shift | within 1 km |
+|---:|---:|---:|---:|---:|---:|
+| 250 m | 9,921 | 92.73% | 10 of 20 | 355 m | 17 of 20 |
+| 500 m | 2,597 | 93.69% | base | | |
+| 1000 m | 675 | 95.15% | 4 of 20 | 789 m | 13 of 20 |
+
+Two things to read here.
+
+**Coverage rises as the grid coarsens, and that is an artefact, not a
+finding.** A cell counts as covered when a store reaches it, so a 1000m cell
+credits a full square kilometre of demand to a store that reaches its centre.
+The coarser the grid, the more generous the accounting. It follows that the
+93.69% quoted throughout this README is itself mildly inflated, and the 250m
+figure of **92.73% is the more honest number**. The effect is small here, 2.4
+points across a fourfold change in cell size, but it is systematic and in a known
+direction.
+
+**Site selection is converging.** Refining to 250m moves the median site 355m;
+coarsening to 1000m moves it 789m. Refining moves the answer less than
+coarsening does, which is what convergence looks like, and 355m is below the
+400m minimum separation between candidates, so it is smaller than the finest
+distinction the candidate set can express at all. The 500m base case sits on the
+settled side of that. The 1000m grid does not, and should not be used.
+
+I should be careful about how much that establishes. Two resolutions either side
+of the base case are consistent with convergence; they do not prove it. Confirming
+the trend would need a 125m run, which I have not done.
+
+This does rehabilitate one thing though. The site instability reported above is
+**not** coming from the grid. It comes from the effective radius, which is the
+next section.
+
 ### So what should someone actually do with this
 
 Not take the 20 sites. They are not stable enough to hand over as a
@@ -392,6 +431,9 @@ What it does support is narrower and more useful:
    how many stores to open. It does not change where they go.
 3. **Treat network routing as worth 3 to 8 points**, not 35, and decide whether
    building that pipeline is worth it on those terms.
+4. **Do not run this on a 1 km grid.** It inflates reported coverage and it moves
+   the sites. 500m is adequate here, 250m is safer, and the reported coverage
+   should be read as the optimistic end of a 2.4 point band.
 
 That is a smaller claim than the one I set out to make, and it is the one the
 evidence supports.
@@ -415,11 +457,11 @@ evidence supports.
   level.** Bengaluru's periphery has grown faster than its core since 2020, so an
   unadjusted 2020 surface understates the periphery specifically and tilts site
   selection toward the centre.
-- **Grid resolution is coarse relative to the promise.** A 500m cell is 1.67
-  minutes of travel at 18 km/h, about 17% of the 10 minute threshold, and
-  centroid snapping adds up to 1,643m more in the worst case. The coverage
-  boundary is therefore fuzzy at the scale of a minute or two, which is why the
-  250m and 1000m reruns are a validity check rather than a formality.
+- **Reported coverage carries a resolution bias.** Coarser grids credit more
+  demand as covered, so the headline 93.69% is the optimistic end of a 2.4 point
+  band and 92.73% at 250m is the more honest figure. Convergence toward finer
+  resolutions is consistent with the two runs either side of the base case but
+  is not proven; that would need a 125m run.
 - **The adoption curve is judgemental.** Its four rate bands are the least
   defensible numbers here, and site selection depends on them.
 - **The population raster is the 2020 epoch.** Bengaluru has grown since, so
@@ -460,19 +502,18 @@ src/network.py         road network, cutoff Dijkstra matrix, haversine matrix
 src/candidates.py      OSM land use parcels, thinning, capping
 src/optimise.py        MCLP exact and greedy, site stability
 src/viz.py             figures
-scripts/               one runner per phase, plus four robustness checks:
+scripts/               one runner per phase, plus five robustness checks:
                        alternate optima, circuity calibration, spatial
-                       stability, effective radius
+                       stability, effective radius, grid resolution
 reports/               summary JSON per phase, figures
 tests/                 18 tests
 ```
 
 ## Status
 
-Phases 1 to 4 and four robustness checks are complete, and every number above
-comes from a run. Still outstanding: the grid resolution reruns at 250m and
-1000m, a capacitated formulation, and the written decision memo. See
-`PROGRESS.md`.
+Phases 1 to 4 and five robustness checks are complete, and every number above
+comes from a run. Still outstanding: a capacitated formulation, a 125m run to
+confirm convergence, and the written decision memo. See `PROGRESS.md`.
 
 ## Data sources
 

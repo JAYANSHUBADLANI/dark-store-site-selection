@@ -121,11 +121,17 @@ def filter_low_demand(
     orders dropped is returned so it can be reported rather than assumed small.
     """
     cfg = cfg or load_config()
-    threshold = float(cfg["grid"]["min_population_per_cell"])
+    density_threshold = float(cfg["grid"]["min_population_density_per_km2"])
+    # Convert to a per cell count using this grid's own cell area, so the filter
+    # means the same thing at every resolution.
+    cell_area_km2 = float(grid["area_km2"].iloc[0]) if len(grid) else 0.0
+    threshold = density_threshold * cell_area_km2
 
     keep = grid["population"] >= threshold
     dropped = {
+        "threshold_density_per_km2": density_threshold,
         "threshold_population": threshold,
+        "cell_area_km2": cell_area_km2,
         "cells_before": int(len(grid)),
         "cells_after": int(keep.sum()),
         "cells_dropped": int((~keep).sum()),

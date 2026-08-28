@@ -19,10 +19,17 @@ grid:
   # re-run at coarser and finer resolutions to show it is not an artefact of
   # this choice, see sensitivity.grid_resolutions_m below.
   cell_size_m: 500
-  # Cells whose population falls below this are dropped before the travel time
+  # Cells below this population density are dropped before the travel time
   # matrix is built. They contribute almost no demand and they dominate the
   # matrix cost. The share of total population dropped is reported.
-  min_population_per_cell: 25
+  #
+  # Expressed as a density rather than a count per cell on purpose. An absolute
+  # count would filter differently at different cell sizes, since a 250m cell
+  # holds a quarter of the people a 500m cell does, and that would confound the
+  # grid resolution comparison with a change in filter strictness. At the 500m
+  # base case this works out to exactly 25 people per cell, which is what the
+  # earlier absolute threshold was.
+  min_population_density_per_km2: 100
 
 population:
   # JRC Global Human Settlement Layer, GHS-POP R2023A.

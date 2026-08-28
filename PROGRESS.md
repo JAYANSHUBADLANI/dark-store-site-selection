@@ -2,7 +2,7 @@
 
 Running status for this project. Updated as phases complete.
 
-## Status: phases 1 to 4 and four robustness checks complete.
+## Status: phases 1 to 4 and five robustness checks complete.
 
 `make demo` runs fetch through figures. Every number in the README comes from
 that run and is written to `reports/` as JSON alongside it.
@@ -93,14 +93,36 @@ that run and is written to `reports/` as JSON alongside it.
   the only input that decides the answer and it is measurable from rider GPS
   traces rather than arguable in a workshop.
 
+### Grid resolution check: done, base case holds
+
+- Reran the full selection at 250m and 1000m with the candidate set held fixed,
+  so only the demand representation changes.
+- Found and fixed a confound first: `min_population_per_cell` was an absolute
+  count, so it would have filtered a 250m grid four times as harshly as a 500m
+  one and confounded resolution with filter strictness. It is now a density,
+  `min_population_density_per_km2: 100`, which reproduces the 500m base case
+  exactly and means the same thing at every resolution.
+- **Coverage rises as the grid coarsens: 92.73% at 250m, 93.69% at 500m, 95.15%
+  at 1000m.** That is an accounting artefact, since a coarse cell credits its
+  whole demand to a store that reaches its centroid. The headline 93.69% is
+  therefore the optimistic end of a 2.4 point band, and 92.73% is the more
+  honest number.
+- **Site selection is converging.** Refining to 250m shifts the median site
+  355m; coarsening to 1000m shifts it 789m. Refining moves the answer less than
+  coarsening, and 355m is below the 400m candidate separation floor, so it is
+  finer than the candidate set can express. 500m is adequate. 1000m is not and
+  should not be used.
+- Two resolutions either side of the base case are consistent with convergence
+  but do not prove it. A 125m run would.
+- This clears the grid as the source of the phase 4 site instability. That comes
+  from the effective radius.
+
 ### Still outstanding
 
-1. **Grid resolution reruns at 250m and 1000m.** The config defines them and the
-   code paths take cell size as an argument, but they need a full phase 1 and
-   phase 2 rebuild each, which has not been run. Until it is, I cannot say the
-   conclusion is not an artefact of the 500m grid.
-2. **A capacitated formulation.** See weakness 1 below. This is the largest
+1. **A capacitated formulation.** See weakness 1 below. This is the largest
    remaining modelling gap.
+2. **A 125m run** to confirm the convergence trend rather than infer it from two
+   points.
 3. The written decision memo.
 4. An interactive Folium map for exploration, alongside the static figures.
 
