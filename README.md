@@ -161,7 +161,9 @@ OSMnx returns a MultiDiGraph, so a two way street contributes two edges. Summing
 edge lengths gives 24,251.1 km, which is roughly double the real centreline
 length. Reporting that as "road length" would overstate the network by a factor
 of two, so both numbers are computed and the undirected one is the one quoted.
-At 13,004 km it lines up with BBMP's own published road length.
+I have not cross checked 13,004 km against BBMP's own published road length, so
+treat it as what OSM contains for this boundary rather than as a verified
+municipal figure.
 
 I use a single effective speed rather than OSM `maxspeed` tags. Those tags are
 free flow legal limits, most Bengaluru links do not carry one, and a two wheeler
