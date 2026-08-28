@@ -6,6 +6,7 @@ import pytest
 from src.optimise import (
     optimality_gap,
     site_stability,
+    solve_capacitated,
     solve_mclp_exact,
     solve_mclp_greedy,
 )
@@ -105,3 +106,51 @@ def test_site_stability_separates_always_from_once():
     assert stability["always_selected"] == [1, 2]
     assert stability["single_scenario_only"] == [9]
     assert stability["n_scenarios"] == 3
+
+
+def test_capacity_far_above_demand_reproduces_the_uncapacitated_answer(toy):
+    """With capacity that never binds, the two formulations must agree.
+
+    This is the check that the capacitated model is a generalisation of the
+    covering one rather than a different model that happens to look similar.
+    """
+    coverage, weights = toy
+    capped = solve_capacitated(coverage, weights, n_stores=2, capacity=1e9)
+    uncapped = solve_mclp_exact(coverage, weights, n_stores=2, time_limit_s=30)
+    assert capped["demand_served"] == pytest.approx(uncapped["covered_demand"])
+
+
+def test_capacity_below_demand_binds_exactly(toy):
+    """When throughput binds, served demand is capacity times store count."""
+    coverage, weights = toy
+    capacity = 2.0
+    result = solve_capacitated(coverage, weights, n_stores=2, capacity=capacity)
+    assert result["demand_served"] == pytest.approx(capacity * 2)
+    assert result["capacity_utilisation"] == pytest.approx(1.0)
+
+
+def test_cannot_serve_more_than_a_cell_actually_demands():
+    """One store, one reachable cell, capacity far above that cell's demand."""
+    coverage = np.array([[1, 0]], dtype=bool)
+    weights = np.array([7.0, 100.0])
+    result = solve_capacitated(coverage, weights, n_stores=1, capacity=1000.0)
+    assert result["demand_served"] == pytest.approx(7.0)
+    assert result["capacity_utilisation"] < 1.0
+
+
+def test_opens_exactly_the_requested_number_of_stores(toy):
+    coverage, weights = toy
+    result = solve_capacitated(coverage, weights, n_stores=3, capacity=5.0)
+    assert len(result["selected"]) == 3
+
+
+def test_allocation_may_split_a_cell_across_two_stores():
+    """Two stores both reach one big cell, neither can serve it alone.
+
+    Continuous allocation should use both. A binary assignment formulation would
+    be forced to waste one of them.
+    """
+    coverage = np.array([[1], [1]], dtype=bool)
+    weights = np.array([10.0])
+    result = solve_capacitated(coverage, weights, n_stores=2, capacity=6.0)
+    assert result["demand_served"] == pytest.approx(10.0)
