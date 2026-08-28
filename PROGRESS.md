@@ -2,7 +2,7 @@
 
 Running status for this project. Updated as phases complete.
 
-## Status: phases 1 to 3 complete and run end to end. Phase 4 outstanding.
+## Status: phases 1 to 3 and two robustness checks complete. Phase 4 outstanding.
 
 `make demo` runs fetch through figures. Every number in the README comes from
 that run and is written to `reports/` as JSON alongside it.
@@ -38,10 +38,29 @@ that run and is written to `reports/` as JSON alongside it.
 
 - Exact MCLP via CBC covers 93.69% of demand with 20 stores and proves
   optimality in 1.1s. Greedy reaches 88.98%, leaving 5.03% on the table.
-- Sites chosen on straight line distance share **0 of 20** with the network
-  solution and deliver 58.65% to 63.18% of demand against a claimed 98.81%.
+- Sites chosen on **uncalibrated** straight line distance share 0 of 20 with the
+  network solution and deliver 58.65% to 63.18% against a claimed 98.81%. See the
+  circuity check below: that comparison is unfair and the honest number is much
+  smaller.
 
-### Robustness check: done
+### Circuity calibration check: done, and it corrected the phase 3 headline
+
+- Phase 3 compared a network matrix at 18 km/h against a straight line matrix at
+  the same 18 km/h. That is a straw man: a straight line path is shorter by a
+  median factor of 1.32, so at equal speed it mechanically reaches further.
+  1.32 squared is about 1.74, which already accounts for most of the 2.03x reach
+  inflation phase 3 reported.
+- `scripts/check_circuity_calibration.py` gives the straight line method its fair
+  speed and reruns the selection. **The 35 point penalty collapses to between 2.8
+  and 7.9 points.**
+- What survives: a real residual gap of 2.8 points at best calibration, site
+  overlap of only 4 or 5 of 20, and the reason for both, which is that the detour
+  factor spans p10 1.15 to p90 1.74 to p99 3.19 and no single scalar absorbs
+  that.
+- The README now leads with the calibrated numbers. The uncalibrated result is
+  kept and shown, framed as the thing that turned out to be mostly arithmetic.
+
+### Alternate optima robustness check: done
 
 - `scripts/check_alternate_optima.py` resamples the straight line optimum 20
   times through weight perturbation, because MCLP alternate optima could have
@@ -69,18 +88,25 @@ Still to do:
 
 ## Open questions and known weaknesses
 
-1. **The adoption curve is the weakest input.** Four judgemental rate bands with
+1. **The optimisation is uncapacitated.** Every store is assumed able to serve
+   all the demand it covers, and the busiest cell alone carries 18,184 modelled
+   orders per month. A capacitated covering formulation is the right model and
+   this is not it. This is the largest remaining modelling gap.
+2. **The 2020 raster biases direction, not just level.** Bengaluru's periphery
+   grew faster than its core after 2020, so the surface understates the periphery
+   specifically and tilts selection toward the centre.
+3. **The adoption curve is the weakest input.** Four judgemental rate bands with
    no public source. The variants hold the population weighted mean fixed while
    changing curve shape, so shape and level can be told apart, but the base
    level itself is still an assumption.
-2. **Population raster is the 2020 epoch.** Absolute figures understated by an
+4. **Population raster vintage.** Absolute figures understated by an
    unknown margin. Not corrected with an invented growth factor.
-3. **One demand cell snaps 1,643m to the network.** One cell of 2,597 and it
+5. **One demand cell snaps 1,643m to the network.** One cell of 2,597 and it
    does not move the result, but the tail is reported rather than hidden behind
    the 40m median.
-4. **Travel time excludes picking, packing and handover**, which consume a large
+6. **Travel time excludes picking, packing and handover**, which consume a large
    share of a real 10 minute promise.
-5. **The candidate filter is physical plausibility only.** Rent, lease
+7. **The candidate filter is physical plausibility only.** Rent, lease
    availability, power, loading access and zoning decide real sites and none of
    them are in OSM.
-6. **No congestion profile.** One speed, whole city, all day.
+8. **No congestion profile.** One speed, whole city, all day.

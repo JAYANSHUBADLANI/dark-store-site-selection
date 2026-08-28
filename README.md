@@ -3,52 +3,96 @@
 Where should a quick commerce operator put its next 20 dark stores so that the
 most demand sits inside a 10 minute delivery promise.
 
-I built this to do one thing properly that almost every "where should we put our
-stores" analysis does badly: **measure distance along the actual road network
-rather than in a straight line.** That is not a detail. On this city, straight
-line distance makes each candidate site look like it reaches **2.03 times** as
-many neighbourhoods as it really does, and a store network chosen that way
-covers **63% of demand where the network optimum covers 94%**.
+I built this to do one thing properly that most "where should we put our stores"
+analyses do badly: **measure travel time along the actual road network rather
+than in a straight line.**
+
+The honest version of the result, after I attacked my own first answer:
+
+> Routing on the real network beats a **properly calibrated** straight line
+> approximation by **2.8 to 7.9 points of coverage**, and changes **15 of 20**
+> site choices. Against an **uncalibrated** straight line the gap looks like 35
+> points, but that comparison is a straw man and I am not going to report it as
+> the finding.
+
+That distinction is the most useful thing in this repository, so it goes first
+rather than in a limitations section at the bottom.
 
 Everything below comes from running the pipeline. No figure in this README was
 typed in by hand.
 
 ![Selected sites](reports/figures/selected_sites.png)
 
-## The headline result
+## The result I first got, and why I did not keep it
 
-I solved the same problem twice, changing only how travel time is measured.
+Solving the same problem twice, changing only how travel time is measured:
 
 | | chosen on road network | chosen on straight line |
 |---|---:|---:|
 | Coverage it claims | 93.69% | 98.81% |
-| Coverage it actually delivers | 93.69% | 63.18% |
-| Overstatement | none | 35.6 points |
-| Sites in common between the two | **0 of 20** | **0 of 20** |
+| Coverage it actually delivers | 93.69% | 58.65% |
+| Sites in common | | **0 of 20** |
 
-The 63.18% is the **best** straight line result, not a typical one. A single
-solve returns 58.65%, and resampling the tie breaks (below) puts the range at
-58.65% to 63.18%. I quote the best case everywhere in this README so the
-comparison is as generous to the straight line method as the evidence allows.
+A 35 point gap, and two completely disjoint site sets. It is a striking result
+and it is close to meaningless, because **both matrices used the same speed of
+18 km/h.**
 
-The straight line method does not just report an inflated number. It picks a
-**completely different and materially worse set of sites**, then reports a
-number that looks better than the good answer. That is the worst possible
-failure mode for a decision tool: confidently wrong, and wrong in the direction
-that makes it look right.
+A straight line path is shorter than the road path between the same two points,
+here by a median factor of 1.32. Applying the same speed to a shorter distance
+mechanically produces a shorter time and therefore more reach. Reach scales
+roughly with the square of the radius, so 1.32 squared, about 1.74, already
+predicts most of the 2.03x reach inflation I measured. **The result was largely
+arithmetic, not discovery.**
 
-In the units the business cares about, choosing sites on straight line distance
-costs **1.69 million orders per month** of coverage at this store count, taking
-the best case straight line solution. Taking the one a single solve actually
-returned, it costs 1.94 million.
+And no practitioner works that way. Straight line distance is used in real
+logistics with a **circuity factor**: the speed is calibrated downward so
+straight line time approximates road time on average. The fair comparison
+calibrates the straight line method before beating it.
 
-## I checked whether that result was real before believing it
+## The calibrated comparison
 
-The maximal covering problem has many alternate optima. When 400 candidates can
-between them reach 98% of a city, a great many different sets of 20 hit the same
-objective value, and the solver returns whichever it reaches first. So "0 of 20
-sites in common" could have been an artefact of an arbitrary tie break rather
-than a property of the method, and the 63% could have been one unlucky draw.
+`scripts/check_circuity_calibration.py` gives the straight line method its fair
+speed and reruns the whole selection.
+
+| straight line variant | implied speed | claims | actually delivers | shortfall vs network | shared sites |
+|---|---:|---:|---:|---:|---:|
+| Uncalibrated | 18.0 km/h | 98.81% | 58.65% | 35.0 pts | 0 of 20 |
+| Calibrated to median detour | 13.7 km/h | 95.58% | 85.80% | 7.9 pts | 4 of 20 |
+| Calibrated to mean detour | 12.6 km/h | 91.80% | 90.29% | 3.4 pts | 5 of 20 |
+| Over-calibrated, 1.5x | 12.0 km/h | 88.65% | 90.90% | **2.8 pts** | 5 of 20 |
+
+**The headline collapses from 35 points to between 3 and 8.** A calibrated
+straight line approximation is, on this city, a reasonable tool. If someone tells
+me they sited stores with haversine distance and a circuity factor, I no longer
+have grounds to tell them they are badly wrong.
+
+What survives is smaller and better supported:
+
+- **A real residual gap.** Even the best calibrated variant gives up 2.8 points
+  of coverage. On 5.5 million modelled orders per month that is about 155,000
+  orders sitting outside the promise that need not be.
+- **Different sites, still.** The calibrated methods share only 4 or 5 of 20
+  sites with the network solution. The coverage numbers converge; the actual
+  recommendation does not.
+- **The reason it cannot be fully calibrated away.** The detour factor is not a
+  constant. Its spread across candidate to cell pairs is p10 1.15, p50 1.32,
+  p90 1.74, p99 3.19. A single scalar cannot absorb that, because the high
+  circuity pairs are exactly the ones that sit across the lakes, railway lines
+  and limited access corridors that decide where a 10 minute boundary really
+  falls. **Network routing earns its place on the variance of circuity, not on
+  its average.**
+- **Over-calibration flips the error.** At 1.5x the straight line method claims
+  88.65% and delivers 90.90%, so it becomes conservative rather than optimistic.
+  Useful to know if the intended failure direction matters.
+
+## The uncalibrated result is at least not a solver artefact
+
+Before the circuity test above, I checked a different way the uncalibrated
+result could have been spurious. The maximal covering problem has many alternate
+optima: when 400 candidates can between them reach 98% of a city, a great many
+different sets of 20 hit the same objective value, and the solver returns
+whichever it reaches first. So "0 of 20 sites in common" could have been an
+artefact of an arbitrary tie break.
 
 `scripts/check_alternate_optima.py` resamples the straight line optimum 20 times
 by perturbing the demand weights by up to 0.1%, which breaks ties differently
@@ -58,35 +102,50 @@ against network truth.
 | | |
 |---|---:|
 | Network optimum | 93.69% |
-| Best straight line solution, scored on the network | 63.18% |
+| Best uncalibrated straight line solution, scored on the network | 63.18% |
 | Worst straight line solution | 58.65% |
 | Trials reaching the network optimum | 0 of 20 |
 | Distinct sites used across all 20 trials | 21 |
 | Sites common to every trial | 19 |
 
-Two things came out of this. The straight line solution is **stable**, not
-arbitrary: 19 of its 20 sites are identical across every trial. And **even its
-best case falls 30.5 points short** of the network optimum. The finding survived
-the check, so I am reporting it as a finding rather than a coincidence.
+The straight line solution is **stable**, not arbitrary: 19 of its 20 sites are
+identical across every trial, and no trial reaches the network optimum. So the
+uncalibrated comparison is a real property of that specification rather than a
+solver coincidence. It is just a comparison against a specification nobody
+should use, which is what the circuity test above established and why the
+calibrated numbers are the ones I lead with.
 
-## Why straight line distance fails here, specifically
+## Why a single circuity factor cannot fix it
 
 ![Reach comparison](reports/figures/reach_comparison.png)
 
-The left panel is the whole argument in one picture. Every candidate sits below
-the equal reach line, and that is not an empirical accident: a road path can
-never be shorter than the straight line between the same two points, so straight
-line distance **can only ever overstate reach, never understate it**. The
-pipeline confirms it holds with no exceptions: of 1,038,800 candidate to cell
-pairs, 22,180 disagree, and **all 22,180 are cases where the straight line says
-covered and the road network says not**. Zero go the other way.
+The left panel shows a property, not a discovery: every candidate sits below the
+equal reach line because a road path can never be shorter than the straight line
+between the same two points, so at equal speed straight line distance **can only
+overstate reach, never understate it**. The pipeline confirms it holds with no
+exceptions: of 1,038,800 candidate to cell pairs, 22,180 disagree, and **all
+22,180** run in the same direction. Zero go the other way. That is a useful
+correctness check on the matrices and nothing more, since a calibrated speed
+removes most of this bias by construction.
 
-The median detour factor is **1.32x**, meaning a typical trip takes 32% longer by
-road than a straight line suggests. The tail matters more than the median
-though: a small number of pairs run to 30x, and those are the cells that sit
-close in a straight line but far by road, across a lake, a railway line or a
-limited access corridor. Bengaluru has plenty of all three, which is why the
-error is not a uniform fudge factor that a corrected constant speed could absorb.
+The right panel is the part that matters. The median detour factor is **1.32x**,
+which is exactly what a circuity factor calibrates away. But the factor is not a
+constant:
+
+| percentile | detour factor |
+|---|---:|
+| p10 | 1.15 |
+| p50 | 1.32 |
+| p90 | 1.74 |
+| p99 | 3.19 |
+| max | 33 |
+
+Calibration sets one number against a distribution that spans nearly threefold
+between its 10th and 90th percentile. The high circuity pairs are not scattered
+at random either: they are cells sitting across the lakes, railway lines and
+limited access corridors that Bengaluru has plenty of, which is precisely where a
+10 minute boundary is decided. **That variance, not the average, is what network
+routing buys.**
 
 ## The demand surface
 
@@ -262,6 +321,25 @@ solutions, so each is a lower bound on what that store count can achieve.
 - **There is no ground truth.** No held out test set says the site selection was
   correct. The deliverable is a decision framework with its sensitivities
   exposed, not a validated optimum.
+- **The case for network routing here is 3 to 8 points of coverage, not 35.**
+  A calibrated straight line approximation is a reasonable tool on this city.
+  The residual gain is real but modest, and anyone deciding whether to build a
+  routing pipeline should weigh it against that number rather than the headline
+  the uncalibrated comparison produces.
+- **The optimisation is uncapacitated.** Every store is assumed able to serve all
+  the demand it covers. The busiest cell alone carries 18,184 modelled orders per
+  month, which is well beyond a single dark store's real throughput, so the
+  solver understates how many stores a dense area actually needs. The correct
+  formulation is a capacitated covering problem and this is not it.
+- **The 2020 population raster biases the answer directionally, not just in
+  level.** Bengaluru's periphery has grown faster than its core since 2020, so an
+  unadjusted 2020 surface understates the periphery specifically and tilts site
+  selection toward the centre.
+- **Grid resolution is coarse relative to the promise.** A 500m cell is 1.67
+  minutes of travel at 18 km/h, about 17% of the 10 minute threshold, and
+  centroid snapping adds up to 1,643m more in the worst case. The coverage
+  boundary is therefore fuzzy at the scale of a minute or two, which is why the
+  250m and 1000m reruns are a validity check rather than a formality.
 - **The adoption curve is judgemental.** Its four rate bands are the least
   defensible numbers here, and site selection depends on them.
 - **The population raster is the 2020 epoch.** Bengaluru has grown since, so

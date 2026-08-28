@@ -1,0 +1,56 @@
+{
+  "median_detour_factor": 1.3185687653141642,
+  "mean_detour_factor": 1.4257758643061171,
+  "detour_percentiles": {
+    "p10": 1.152200353163326,
+    "p50": 1.3185687653141642,
+    "p90": 1.7405434316350887,
+    "p99": 3.1862827508546245,
+    "max": 32.16485759816021
+  },
+  "network_optimum": 0.9369279288769194,
+  "results": [
+    {
+      "label": "uncalibrated (phase 3)",
+      "straight_line_time_multiplier": 1.0,
+      "implied_speed_kmph": 18.0,
+      "claimed_coverage": 0.9880548943100997,
+      "actual_coverage_on_network": 0.5865461905643569,
+      "overstatement": 0.4015087037457429,
+      "shortfall_vs_network_optimum": 0.3503817383125626,
+      "sites_shared_with_network_optimum": 0
+    },
+    {
+      "label": "calibrated to median detour",
+      "straight_line_time_multiplier": 1.3186,
+      "implied_speed_kmph": 13.65,
+      "claimed_coverage": 0.9557681975852025,
+      "actual_coverage_on_network": 0.8579750922795687,
+      "overstatement": 0.09779310530563379,
+      "shortfall_vs_network_optimum": 0.07895283659735075,
+      "sites_shared_with_network_optimum": 4
+    },
+    {
+      "label": "calibrated to mean detour",
+      "straight_line_time_multiplier": 1.4258,
+      "implied_speed_kmph": 12.62,
+      "claimed_coverage": 0.91801115458234,
+      "actual_coverage_on_network": 0.9028652951692712,
+      "overstatement": 0.015145859413068785,
+      "shortfall_vs_network_optimum": 0.03406263370764828,
+      "sites_shared_with_network_optimum": 5
+    },
+    {
+      "label": "over-calibrated 1.5x",
+      "straight_line_time_multiplier": 1.5,
+      "implied_speed_kmph": 12.0,
+      "claimed_coverage": 0.8865061768327424,
+      "actual_coverage_on_network": 0.9089559710254641,
+      "overstatement": -0.02244979419272175,
+      "shortfall_vs_network_optimum": 0.027971957851455342,
+      "sites_shared_with_network_optimum": 5
+    }
+  ],
+  "best_calibrated_shortfall": 0.027971957851455342,
+  "verdict": "survives: even a fairly calibrated straight line method loses real coverage"
+}
