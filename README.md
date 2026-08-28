@@ -7,21 +7,91 @@ I built this to do one thing properly that most "where should we put our stores"
 analyses do badly: **measure travel time along the actual road network rather
 than in a straight line.**
 
-The honest version of the result, after I attacked my own first answer:
+I got a striking answer, then spent longer attacking it than building it. Two
+of those attacks landed, and they matter more than the original result:
 
-> Routing on the real network beats a **properly calibrated** straight line
-> approximation by **2.8 to 7.9 points of coverage**, and changes **15 of 20**
-> site choices. Against an **uncalibrated** straight line the gap looks like 35
-> points, but that comparison is a straw man and I am not going to report it as
-> the finding.
+> **1. The question was malformed.** Asking where 20 dark stores go assumes reach
+> is the binding constraint. It is not. At 20 stores, throughput binds
+> completely: every store runs at exactly its capacity, so any 20 reachable
+> sites serve identical demand and **location does not affect the answer at
+> all**. The covering model reports 93.69% coverage while those stores can
+> physically serve **10.8%** of demand. Location only starts to decide anything
+> at around **180 to 200 stores**.
+>
+> **2. The headline comparison was a straw man.** Routing on the real network
+> beats a **properly calibrated** straight line approximation by 2.8 to 7.9
+> points, not the 35 points I first reported, because my first comparison gave
+> both methods the same speed when practice calibrates the straight line one
+> down.
 
-That distinction is the most useful thing in this repository, so it goes first
-rather than in a limitations section at the bottom.
+Both are the kind of thing a reader finds for themselves if the author does not,
+so they go first rather than in a limitations section at the bottom.
 
 Everything below comes from running the pipeline. No figure in this README was
 typed in by hand.
 
 ![Selected sites](reports/figures/selected_sites.png)
+
+## Capacity, and why the siting question was the wrong one
+
+The covering model asks whether a store can **reach** a cell. It never asks
+whether it can **fulfil** it. Those come apart badly here.
+
+A dark store's throughput is a real limit and I do not have a sourced figure for
+it, so I swept it rather than inventing one. Placing 20 stores:
+
+| capacity per store per month | demand served | capacity ceiling | utilisation | sites shared with the covering solution |
+|---:|---:|---:|---:|---:|
+| 10,000 | 3.61% | 3.61% | 1.000 | 1 of 20 |
+| 20,000 | 7.21% | 7.21% | 1.000 | 1 of 20 |
+| 30,000 | 10.82% | 10.82% | 1.000 | 1 of 20 |
+| 40,000 | 14.42% | 14.42% | 1.000 | 0 of 20 |
+| 60,000 | 21.63% | 21.63% | 1.000 | 0 of 20 |
+
+**Served demand equals the capacity ceiling exactly, at every level, with
+utilisation of 1.000.** Every store fills up. That has a blunt consequence: at
+this store count the optimiser's location choice **changes nothing**. Any 20
+sites with enough demand within reach produce the same served demand, which in a
+city this dense is nearly all of them. The covering solution and the capacitated
+solution share 0 or 1 sites out of 20 and it does not matter, because they serve
+identical volume.
+
+So the model that reports 93.69% coverage describes 20 stores that can serve
+**10.8%** of demand.
+
+### Where the constraint actually flips
+
+Capacity cannot bind forever. Add enough stores and there stops being enough
+reachable demand to fill them all.
+
+| stores | served | ceiling | utilisation | binding constraint |
+|---:|---:|---:|---:|---|
+| 20 | 10.82% | 10.82% | 1.000 | capacity |
+| 60 | 32.45% | 32.45% | 1.000 | capacity |
+| 100 | 54.08% | 54.08% | 1.000 | capacity |
+| 140 | 75.71% | 75.71% | 1.000 | capacity |
+| 180 | 97.34% | 97.34% | 1.000 | capacity |
+| 200 | 98.24% | 100% | 0.908 | **reach** |
+
+**Reach begins to bind between 180 and 200 stores**, at 30,000 orders per store
+per month. That single number reconciles the whole repository:
+
+- **Below roughly 180 stores, this is not a siting problem.** It is a store count
+  problem, and the answer is arithmetic: demand divided by throughput. 25% of the
+  market needs 47 stores, 50% needs 93, 90% needs 167. All the covering
+  machinery, the road network, the Dijkstra pruning, the circuity analysis, is
+  answering a question that is not binding.
+- **Above it, the covering model is the right tool**, and everything else in this
+  repository applies.
+
+The store count where this flips is close to the scale the real Bengaluru market
+operates at across all players, which is a reassuring sanity check on the order
+of magnitude, though not a validation of any specific number.
+
+**Caveat that limits all of this:** the capacity figure is swept, not sourced. The
+crossover point scales inversely with it. What does not depend on the capacity
+number is the structural finding: there is a store count below which location is
+irrelevant, and a covering model cannot tell you whether you are below it.
 
 ## The result I first got, and why I did not keep it
 
@@ -423,10 +493,15 @@ recommendation, and this repository should not pretend otherwise.
 
 What it does support is narrower and more useful:
 
-1. **Pin down the effective delivery radius before anything else.** It is the
-   only input that materially decides the answer, and it is measurable: it comes
-   out of rider GPS traces, not out of a workshop. Every hour spent refining the
-   demand model before that number is settled is wasted.
+0. **Check whether you are even in the siting regime.** Divide demand by store
+   throughput. If that number is far above your planned store count, location is
+   not your constraint and no amount of spatial optimisation will change your
+   served volume. On these figures that threshold is around 180 stores, and a
+   20 store plan is nowhere near it.
+1. **Then pin down the effective delivery radius.** It is the only spatial input
+   that materially decides the answer, and it is measurable: it comes out of
+   rider GPS traces, not out of a workshop. Every hour spent refining the demand
+   model before that number is settled is wasted.
 2. **Stop arguing about the adoption curve.** It changes the business case for
    how many stores to open. It does not change where they go.
 3. **Treat network routing as worth 3 to 8 points**, not 35, and decide whether
@@ -448,11 +523,10 @@ evidence supports.
   The residual gain is real but modest, and anyone deciding whether to build a
   routing pipeline should weigh it against that number rather than the headline
   the uncalibrated comparison produces.
-- **The optimisation is uncapacitated.** Every store is assumed able to serve all
-  the demand it covers. The busiest cell alone carries 18,184 modelled orders per
-  month, which is well beyond a single dark store's real throughput, so the
-  solver understates how many stores a dense area actually needs. The correct
-  formulation is a capacitated covering problem and this is not it.
+- **Store throughput is swept, not sourced.** The capacity analysis above rests
+  on a range I chose from an order of magnitude argument, not a cited figure. The
+  180 store crossover scales inversely with it, so treat that number as a
+  structure rather than an estimate.
 - **The 2020 population raster biases the answer directionally, not just in
   level.** Bengaluru's periphery has grown faster than its core since 2020, so an
   unadjusted 2020 surface understates the periphery specifically and tilts site
@@ -500,20 +574,21 @@ src/population.py      raster to grid, without resampling counts
 src/demand.py          the demand chain and its sensitivity variants
 src/network.py         road network, cutoff Dijkstra matrix, haversine matrix
 src/candidates.py      OSM land use parcels, thinning, capping
-src/optimise.py        MCLP exact and greedy, site stability
+src/optimise.py        MCLP exact and greedy, capacitated variant, stability
 src/viz.py             figures
-scripts/               one runner per phase, plus five robustness checks:
+scripts/               one runner per phase, plus six robustness checks:
                        alternate optima, circuity calibration, spatial
-                       stability, effective radius, grid resolution
+                       stability, effective radius, grid resolution,
+                       binding constraint
 reports/               summary JSON per phase, figures
 tests/                 18 tests
 ```
 
 ## Status
 
-Phases 1 to 4 and five robustness checks are complete, and every number above
-comes from a run. Still outstanding: a capacitated formulation, a 125m run to
-confirm convergence, and the written decision memo. See `PROGRESS.md`.
+Phases 1 to 5 and six robustness checks are complete, and every number above
+comes from a run. Still outstanding: a sourced throughput figure, a 125m run to
+confirm grid convergence, and the written decision memo. See `PROGRESS.md`.
 
 ## Data sources
 

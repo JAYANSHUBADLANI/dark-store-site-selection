@@ -2,7 +2,7 @@
 
 Running status for this project. Updated as phases complete.
 
-## Status: phases 1 to 4 and five robustness checks complete.
+## Status: phases 1 to 5 and six robustness checks complete.
 
 `make demo` runs fetch through figures. Every number in the README comes from
 that run and is written to `reports/` as JSON alongside it.
@@ -117,12 +117,32 @@ that run and is written to `reports/` as JSON alongside it.
 - This clears the grid as the source of the phase 4 site instability. That comes
   from the effective radius.
 
+### Phase 5, capacity: done, and it reframed the question rather than the answer
+
+- Added a capacitated formulation to `src/optimise.py`: binary open decisions
+  plus continuous allocation variables, one per reachable candidate and cell
+  pair rather than the dense product, which keeps it tractable and solves in
+  under half a second.
+- Throughput is swept over 10k to 60k orders per store per month rather than
+  fixed, since I have no sourced figure and one invented number would just move
+  the guesswork.
+- **At 20 stores, capacity utilisation is exactly 1.000 at every capacity
+  level.** Served demand equals the capacity ceiling, so location changes
+  nothing: any 20 sites with enough demand in reach serve identical volume. The
+  covering model reports 93.69% coverage for stores that can serve 10.8%.
+- **Reach begins to bind only between 180 and 200 stores.** Below that this is a
+  store count problem, not a siting problem, and the answer is demand divided by
+  throughput: 47 stores for 25% of the market, 93 for 50%, 167 for 90%.
+- That crossover reconciles the repository: everything spatial in it is the
+  right tool above roughly 180 stores and the wrong tool below.
+
 ### Still outstanding
 
-1. **A capacitated formulation.** See weakness 1 below. This is the largest
-   remaining modelling gap.
-2. **A 125m run** to confirm the convergence trend rather than infer it from two
-   points.
+1. **A sourced throughput figure.** The 180 store crossover scales inversely
+   with capacity, so it is a structure rather than an estimate until this is
+   pinned to a citation.
+2. **A 125m run** to confirm the grid convergence trend rather than infer it
+   from two points.
 3. The written decision memo.
 4. An interactive Folium map for exploration, alongside the static figures.
 

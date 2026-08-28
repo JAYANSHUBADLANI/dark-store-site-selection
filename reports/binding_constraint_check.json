@@ -1,0 +1,89 @@
+{
+  "capacity_per_store": 30000.0,
+  "total_demand": 5547355.989471666,
+  "n_candidates": 400,
+  "sweep": [
+    {
+      "n_stores": 20,
+      "served_share": 0.1081596351207387,
+      "capacity_ceiling_share": 0.10815963517371895,
+      "capacity_utilisation": 0.9999999995101663,
+      "binding_constraint": "capacity",
+      "runtime_s": 0.54
+    },
+    {
+      "n_stores": 40,
+      "served_share": 0.21631927023920616,
+      "capacity_ceiling_share": 0.2163192703474379,
+      "capacity_utilisation": 0.9999999994996668,
+      "binding_constraint": "capacity",
+      "runtime_s": 0.46
+    },
+    {
+      "n_stores": 60,
+      "served_share": 0.324478905058973,
+      "capacity_ceiling_share": 0.3244789055211568,
+      "capacity_utilisation": 0.999999998575612,
+      "binding_constraint": "capacity",
+      "runtime_s": 0.46
+    },
+    {
+      "n_stores": 80,
+      "served_share": 0.4326385407920748,
+      "capacity_ceiling_share": 0.4326385406948758,
+      "capacity_utilisation": 1.0000000002246656,
+      "binding_constraint": "capacity",
+      "runtime_s": 0.46
+    },
+    {
+      "n_stores": 100,
+      "served_share": 0.5407981756087586,
+      "capacity_ceiling_share": 0.5407981758685947,
+      "capacity_utilisation": 0.9999999995195324,
+      "binding_constraint": "capacity",
+      "runtime_s": 0.47
+    },
+    {
+      "n_stores": 120,
+      "served_share": 0.6489578106683873,
+      "capacity_ceiling_share": 0.6489578110423136,
+      "capacity_utilisation": 0.9999999994238049,
+      "binding_constraint": "capacity",
+      "runtime_s": 0.5
+    },
+    {
+      "n_stores": 140,
+      "served_share": 0.7571174458156431,
+      "capacity_ceiling_share": 0.7571174462160326,
+      "capacity_utilisation": 0.999999999471166,
+      "binding_constraint": "capacity",
+      "runtime_s": 0.52
+    },
+    {
+      "n_stores": 160,
+      "served_share": 0.8652770808881785,
+      "capacity_ceiling_share": 0.8652770813897516,
+      "capacity_utilisation": 0.9999999994203325,
+      "binding_constraint": "capacity",
+      "runtime_s": 1.02
+    },
+    {
+      "n_stores": 180,
+      "served_share": 0.9734367162850226,
+      "capacity_ceiling_share": 0.9734367165634704,
+      "capacity_utilisation": 0.9999999997139537,
+      "binding_constraint": "capacity",
+      "runtime_s": 2.99
+    },
+    {
+      "n_stores": 200,
+      "served_share": 0.98238245872648,
+      "capacity_ceiling_share": 1.0815963517371894,
+      "capacity_utilisation": 0.9082708693947067,
+      "binding_constraint": "reach",
+      "runtime_s": 3.58
+    }
+  ],
+  "crossover_n_stores": 200,
+  "message": "reach begins to bind somewhere between 180 and 200 stores. Below that, store count decides the answer and location barely matters. Above it, the covering model is the right tool."
+}

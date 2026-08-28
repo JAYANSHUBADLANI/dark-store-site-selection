@@ -109,6 +109,22 @@ candidates:
   # and the MIP cost is worse than linear.
   max_candidates: 400
 
+capacity:
+  # A dark store cannot serve unlimited demand, and the uncapacitated covering
+  # model assumes it can. Coverage means a store can reach a cell, not that it
+  # can fulfil it.
+  #
+  # I do not have a sourced throughput figure, so this is deliberately swept
+  # rather than fixed. The range is set from the order of magnitude implied by
+  # listed players' disclosed national order volumes divided by their disclosed
+  # store counts, which lands in the low tens of thousands of orders per store
+  # per month. Treat every absolute number downstream of this as a scenario, not
+  # an estimate.
+  orders_per_store_per_month_sweep: [10000, 20000, 30000, 40000, 60000]
+  # The value used when a single number is needed, for example in the headline
+  # comparison against the uncapacitated result.
+  orders_per_store_per_month: 30000
+
 optimisation:
   # Number of dark stores to place. This is the budget the memo answers for.
   n_stores: 20

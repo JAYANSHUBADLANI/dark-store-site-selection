@@ -177,3 +177,96 @@ def site_stability(solutions: dict[str, list[int]]) -> dict:
         "always_selected": sorted(s for s, c in counts.items() if c == n_scenarios),
         "single_scenario_only": sorted(s for s, c in counts.items() if c == 1),
     }
+
+
+def solve_capacitated(
+    coverage: np.ndarray,
+    weights: np.ndarray,
+    n_stores: int,
+    capacity: float,
+    time_limit_s: int = 600,
+    mip_gap: float = 0.01,
+) -> dict:
+    """Maximise demand actually served, subject to a per store throughput limit.
+
+    The uncapacitated covering model asks whether a store can reach a cell. This
+    asks whether it can fulfil it, which is a different and usually tighter
+    question:
+
+        variables
+            x_j in {0,1}     open a store at j
+            z_ij >= 0        orders of cell i served by store j
+
+        maximise    sum_ij z_ij
+        subject to  sum_j z_ij <= w_i           cannot serve more than exists
+                    sum_i z_ij <= C * x_j       store throughput
+                    z_ij = 0 where j cannot reach i
+                    sum_j x_j = p
+
+    Allocation is continuous rather than binary, so a cell can be split across
+    two stores. That is both easier to solve and closer to reality, since orders
+    from one neighbourhood do get fulfilled from more than one location.
+
+    Only the reachable pairs get a z variable, which is what keeps this tractable:
+    the dense formulation would need one per candidate and cell.
+    """
+    import pulp
+
+    started = time.time()
+    n_candidates, n_cells = coverage.shape
+
+    problem = pulp.LpProblem("capacitated_covering", pulp.LpMaximize)
+    x = [pulp.LpVariable(f"x_{j}", cat="Binary") for j in range(n_candidates)]
+
+    pairs = np.argwhere(coverage)
+    z = {(int(j), int(i)): pulp.LpVariable(f"z_{j}_{i}", lowBound=0) for j, i in pairs}
+
+    by_cell: dict[int, list] = {}
+    by_store: dict[int, list] = {}
+    for (j, i), var in z.items():
+        by_cell.setdefault(i, []).append(var)
+        by_store.setdefault(j, []).append(var)
+
+    problem += pulp.lpSum(z.values())
+
+    for i, vars_ in by_cell.items():
+        problem += pulp.lpSum(vars_) <= float(weights[i])
+    for j in range(n_candidates):
+        vars_ = by_store.get(j, [])
+        if vars_:
+            problem += pulp.lpSum(vars_) <= float(capacity) * x[j]
+        else:
+            problem += x[j] == 0
+
+    problem += pulp.lpSum(x) == int(n_stores)
+
+    solver = pulp.PULP_CBC_CMD(
+        msg=False, timeLimit=int(time_limit_s), gapRel=float(mip_gap)
+    )
+    problem.solve(solver)
+
+    status = pulp.LpStatus[problem.status]
+    selected = sorted(
+        j for j in range(n_candidates) if x[j].value() and x[j].value() > 0.5
+    )
+    served = float(pulp.value(problem.objective) or 0.0)
+    total = float(weights.sum())
+    runtime = time.time() - started
+
+    utilisation = served / (capacity * n_stores) if capacity and n_stores else 0.0
+
+    return {
+        "method": "capacitated",
+        "status": status,
+        "proved_optimal": status == "Optimal" and runtime < time_limit_s * 0.99,
+        "capacity_per_store": float(capacity),
+        "n_stores": int(n_stores),
+        "selected": selected,
+        "demand_served": served,
+        "total_demand": total,
+        "served_share": served / total if total else 0.0,
+        "theoretical_max_served": float(capacity) * int(n_stores),
+        "capacity_utilisation": utilisation,
+        "z_variables": len(z),
+        "runtime_s": round(runtime, 2),
+    }
