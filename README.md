@@ -316,6 +316,86 @@ answers "where is best given coverage", not "where can you actually open".**
 Diminishing returns set in hard after about 30 stores. These are greedy
 solutions, so each is a lower bound on what that store count can achieve.
 
+## Sensitivity, and the finding that reframed the project
+
+I swept rider speed, delivery threshold, store count and the adoption curve, one
+parameter at a time, then asked how many of the 20 recommended sites survive.
+
+**None of them.** Across 10 comparable scenarios, 88 distinct sites get chosen
+and not one appears in every scenario. My first thought was that the metric was
+too strict, since it compares parcel identifiers and candidates are only 400m
+apart, so moving a store next door scores as total disagreement.
+`scripts/check_spatial_stability.py` tests that by measuring distance instead of
+identity, and the instability is real: under a typical scenario change the
+nearest chosen site is 662m away, but in the worst case the median base site
+moves 2,348m and one moves 4,681m. Only 7 of 20 stay within 2 km of a chosen
+site across every scenario.
+
+But the breakdown of *which* scenarios move the sites is the interesting part:
+
+| scenario | median shift of a base site | sites within 1 km |
+|---|---:|---:|
+| Adoption curve flat | **0 m** | 20 of 20 |
+| Adoption curve steep | **0 m** | 20 of 20 |
+| Threshold 12 min | 515 m | 14 of 20 |
+| Speed 15 km/h | 613 m | 14 of 20 |
+| Threshold 8 min | 704 m | 15 of 20 |
+| Speed 22 km/h | 703 m | 12 of 20 |
+| Speed 12 km/h | 1,008 m | 10 of 20 |
+| Threshold 15 min | 1,823 m | 5 of 20 |
+| Speed 26 km/h | 1,824 m | 4 of 20 |
+
+**The adoption curve does not move the answer at all.** That is the assumption I
+had flagged as the weakest thing in the project, the one with no public source
+and four judgemental numbers in a config file. Reshaping it from flat to steep
+changes the selected sites by zero metres. It changes how much demand a solution
+is credited with, but not where the stores go, because it rescales demand
+roughly monotonically with density and the covering problem only cares about the
+ordering.
+
+What does move the answer is travel radius. And the last two rows of that table
+are suspiciously alike: 15 minutes at 18 km/h shifts sites 1,823m, 10 minutes at
+26 km/h shifts them 1,824m.
+
+### Speed and threshold are the same parameter
+
+A covering constraint only ever asks whether a cell is within `speed x
+threshold` metres of road distance. So the two should enter the model only
+through their product, and `scripts/check_effective_radius.py` confirms it
+exactly:
+
+| speed | threshold | effective radius | coverage | reachable pairs | sites shared |
+|---:|---:|---:|---:|---:|---:|
+| 18.0 km/h | 10 min | 3,000 m | 93.69% | 21,627 | reference |
+| 12.0 km/h | 15 min | 3,000 m | 93.69% | 21,627 | 20 of 20 |
+| 22.5 km/h | 8 min | 3,000 m | 93.69% | 21,627 | 20 of 20 |
+| 18.0 km/h | 15 min | 4,500 m | 98.84% | 52,351 | reference |
+| 27.0 km/h | 10 min | 4,500 m | 98.84% | 52,351 | 20 of 20 |
+| 13.5 km/h | 20 min | 4,500 m | 98.84% | 52,351 | 20 of 20 |
+
+Identical coverage, identical reachable pair counts, identical site selection.
+**The sensitivity analysis has one degree of freedom where it looked like it had
+four.**
+
+### So what should someone actually do with this
+
+Not take the 20 sites. They are not stable enough to hand over as a
+recommendation, and this repository should not pretend otherwise.
+
+What it does support is narrower and more useful:
+
+1. **Pin down the effective delivery radius before anything else.** It is the
+   only input that materially decides the answer, and it is measurable: it comes
+   out of rider GPS traces, not out of a workshop. Every hour spent refining the
+   demand model before that number is settled is wasted.
+2. **Stop arguing about the adoption curve.** It changes the business case for
+   how many stores to open. It does not change where they go.
+3. **Treat network routing as worth 3 to 8 points**, not 35, and decide whether
+   building that pipeline is worth it on those terms.
+
+That is a smaller claim than the one I set out to make, and it is the one the
+evidence supports.
+
 ## What this project does not establish
 
 - **There is no ground truth.** No held out test set says the site selection was
@@ -380,17 +460,19 @@ src/network.py         road network, cutoff Dijkstra matrix, haversine matrix
 src/candidates.py      OSM land use parcels, thinning, capping
 src/optimise.py        MCLP exact and greedy, site stability
 src/viz.py             figures
-scripts/               one runner per phase, plus the robustness check
+scripts/               one runner per phase, plus four robustness checks:
+                       alternate optima, circuity calibration, spatial
+                       stability, effective radius
 reports/               summary JSON per phase, figures
 tests/                 18 tests
 ```
 
 ## Status
 
-Phases 1 to 3 and the robustness check are complete and every number above comes
-from a run. Phase 4, the full sensitivity sweep across rider speed, delivery
-threshold, store count and grid resolution, plus the decision memo, is still to
-do. See `PROGRESS.md`.
+Phases 1 to 4 and four robustness checks are complete, and every number above
+comes from a run. Still outstanding: the grid resolution reruns at 250m and
+1000m, a capacitated formulation, and the written decision memo. See
+`PROGRESS.md`.
 
 ## Data sources
 

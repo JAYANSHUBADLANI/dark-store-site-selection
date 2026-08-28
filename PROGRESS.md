@@ -2,7 +2,7 @@
 
 Running status for this project. Updated as phases complete.
 
-## Status: phases 1 to 3 and two robustness checks complete. Phase 4 outstanding.
+## Status: phases 1 to 4 and four robustness checks complete.
 
 `make demo` runs fetch through figures. Every number in the README comes from
 that run and is written to `reports/` as JSON alongside it.
@@ -69,21 +69,39 @@ that run and is written to `reports/` as JSON alongside it.
   every trial, and no trial reaches the network optimum. Worst case penalty
   35.0 points, best case 30.5.
 
-### Phase 4, sensitivity, maps and the memo: not started
+### Phase 4, sensitivity and site stability: done, and it reframed the project
 
-Still to do:
+- Swept speed, threshold, store count and adoption variant one parameter at a
+  time. **No base case site survives every scenario**: 88 distinct sites get
+  chosen across 10 comparable scenarios.
+- Checked whether that was an artefact of comparing parcel identifiers rather
+  than locations, since candidates sit only 400m apart. It is not:
+  `check_spatial_stability.py` finds a typical shift of 662m but a worst case
+  median of 2,348m, and only 7 of 20 sites stay within 2 km across all
+  scenarios.
+- **The adoption curve moves the sites by zero metres.** The input I had flagged
+  as the weakest thing in the project turns out not to affect site selection at
+  all. It rescales demand roughly monotonically with density, and a covering
+  problem only cares about ordering.
+- **Speed and threshold are the same parameter.** `check_effective_radius.py`
+  confirms exactly: three combinations at a 3,000m effective radius give
+  identical coverage, identical reachable pair counts and identical site
+  selection, and likewise at 4,500m. The sensitivity has one degree of freedom
+  where it looked like four.
+- Conclusion the repository now leads with: do not take the 20 sites, they are
+  not stable enough. Pin down the effective delivery radius first, because it is
+  the only input that decides the answer and it is measurable from rider GPS
+  traces rather than arguable in a workshop.
 
-1. The full sensitivity sweep. `config/config.yaml` already defines the grid:
-   rider speed 12 to 26 km/h, threshold 8 to 15 minutes, store counts 5 to 40,
-   grid resolutions 250m/500m/1000m, and the three adoption variants. The code
-   paths take all of these as arguments already, so this is a runner plus a
-   results table, not new modelling.
-2. **Site stability across those scenarios.** `src/optimise.py::site_stability`
-   is written and unit tested but has not been run on real scenario output. This
-   is the output that matters most for the memo: a site chosen under every
-   assumption is a different recommendation from one that appears only in the
-   base case.
-3. The decision memo.
+### Still outstanding
+
+1. **Grid resolution reruns at 250m and 1000m.** The config defines them and the
+   code paths take cell size as an argument, but they need a full phase 1 and
+   phase 2 rebuild each, which has not been run. Until it is, I cannot say the
+   conclusion is not an artefact of the 500m grid.
+2. **A capacitated formulation.** See weakness 1 below. This is the largest
+   remaining modelling gap.
+3. The written decision memo.
 4. An interactive Folium map for exploration, alongside the static figures.
 
 ## Open questions and known weaknesses

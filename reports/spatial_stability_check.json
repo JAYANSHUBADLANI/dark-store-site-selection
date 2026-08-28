@@ -1,0 +1,79 @@
+{
+  "n_base_sites": 20,
+  "n_scenarios_compared": 9,
+  "per_scenario": {
+    "threshold_8min": {
+      "median_m": 704.3919135397887,
+      "p90_m": 1802.502160841468,
+      "max_m": 2857.850103405753,
+      "within_500m": 8,
+      "within_1000m": 15
+    },
+    "threshold_12min": {
+      "median_m": 515.2079378706019,
+      "p90_m": 2482.642333352407,
+      "max_m": 2746.777251597301,
+      "within_500m": 9,
+      "within_1000m": 14
+    },
+    "threshold_15min": {
+      "median_m": 1822.784956654824,
+      "p90_m": 2754.686181941655,
+      "max_m": 3332.5388705013406,
+      "within_500m": 2,
+      "within_1000m": 5
+    },
+    "adoption_flat": {
+      "median_m": 0.0,
+      "p90_m": 0.0,
+      "max_m": 0.0,
+      "within_500m": 20,
+      "within_1000m": 20
+    },
+    "adoption_steep": {
+      "median_m": 0.0,
+      "p90_m": 0.0,
+      "max_m": 0.0,
+      "within_500m": 20,
+      "within_1000m": 20
+    },
+    "speed_12kmph": {
+      "median_m": 1007.96123778317,
+      "p90_m": 2892.3380708541235,
+      "max_m": 4680.778055252098,
+      "within_500m": 6,
+      "within_1000m": 10
+    },
+    "speed_15kmph": {
+      "median_m": 612.9612454439907,
+      "p90_m": 1702.8870868090946,
+      "max_m": 2857.850103405753,
+      "within_500m": 8,
+      "within_1000m": 14
+    },
+    "speed_22kmph": {
+      "median_m": 702.840389392235,
+      "p90_m": 2255.5243703465576,
+      "max_m": 2618.1895185340177,
+      "within_500m": 5,
+      "within_1000m": 12
+    },
+    "speed_26kmph": {
+      "median_m": 1824.3622153692718,
+      "p90_m": 2774.4219868120617,
+      "max_m": 3081.7863766579494,
+      "within_500m": 0,
+      "within_1000m": 4
+    }
+  },
+  "worst_case_distance_m": {
+    "median": 2347.560977649024,
+    "p90": 3215.710687150642,
+    "max": 4680.778055252098
+  },
+  "typical_distance_m_median": 661.9253354960417,
+  "sites_always_within_1km": 0,
+  "sites_always_within_2km": 7,
+  "robust_1km_share": 0.0,
+  "verdict": "genuinely unstable: the sites move, not just the parcel labels"
+}

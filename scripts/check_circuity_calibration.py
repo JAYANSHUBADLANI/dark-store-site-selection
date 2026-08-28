@@ -34,7 +34,9 @@ from src.network import coverage_from_matrix  # noqa: E402
 from src.optimise import solve_mclp_exact  # noqa: E402
 
 
-def score_under(coverage: np.ndarray, weights: np.ndarray, selected: list[int]) -> float:
+def score_under(
+    coverage: np.ndarray, weights: np.ndarray, selected: list[int]
+) -> float:
     covered = np.zeros(coverage.shape[1], dtype=bool)
     for j in selected:
         covered |= coverage[j]
@@ -63,10 +65,12 @@ def run() -> dict:
 
     print(f"median detour factor: {median_detour:.4f}")
     print(f"mean detour factor:   {mean_detour:.4f}")
-    print(f"detour factor spread: p10 {np.percentile(ratios, 10):.2f}, "
-          f"p50 {np.percentile(ratios, 50):.2f}, "
-          f"p90 {np.percentile(ratios, 90):.2f}, "
-          f"p99 {np.percentile(ratios, 99):.2f}")
+    print(
+        f"detour factor spread: p10 {np.percentile(ratios, 10):.2f}, "
+        f"p50 {np.percentile(ratios, 50):.2f}, "
+        f"p90 {np.percentile(ratios, 90):.2f}, "
+        f"p99 {np.percentile(ratios, 99):.2f}"
+    )
 
     reference = solve_mclp_exact(network_cover, weights, n_stores, 300, 0.0)
     network_optimum = reference["coverage_share"]
@@ -105,10 +109,12 @@ def run() -> dict:
             "sites_shared_with_network_optimum": overlap,
         }
         results.append(row)
-        print(f"{label:30s} speed {row['implied_speed_kmph']:5.1f} km/h  "
-              f"claims {claimed:.4f}  actual {actual:.4f}  "
-              f"shortfall {row['shortfall_vs_network_optimum']:.4f}  "
-              f"shared sites {overlap}/{n_stores}")
+        print(
+            f"{label:30s} speed {row['implied_speed_kmph']:5.1f} km/h  "
+            f"claims {claimed:.4f}  actual {actual:.4f}  "
+            f"shortfall {row['shortfall_vs_network_optimum']:.4f}  "
+            f"shared sites {overlap}/{n_stores}"
+        )
 
     best = min(r["shortfall_vs_network_optimum"] for r in results)
     verdict = (
