@@ -166,13 +166,13 @@ def run() -> dict:
         for i in range(len(by_size) - 1)
     ]
     deltas = [abs(step["delta"]) for step in coverage_steps]
-    coverage_converging = all(
-        deltas[i] > deltas[i + 1] for i in range(len(deltas) - 1)
-    )
+    coverage_converging = all(deltas[i] > deltas[i + 1] for i in range(len(deltas) - 1))
     print("\ncoverage as the grid refines")
     for step in coverage_steps:
-        print(f"  {step['from_m']:6.0f}m to {step['to_m']:6.0f}m: "
-              f"{step['delta']:+.4f}")
+        print(
+            f"  {step['from_m']:6.0f}m to {step['to_m']:6.0f}m: "
+            f"{step['delta']:+.4f}"
+        )
     print(f"  successive changes shrinking: {coverage_converging}")
 
     # Site stability: take the worst finer grid, not the best.
@@ -184,8 +184,10 @@ def run() -> dict:
 
     print("\nsite selection as the grid refines")
     for row in sorted(finer, key=lambda r: -r["cell_size_m"]):
-        print(f"  {row['cell_size_m']:6.0f}m: median shift "
-              f"{row['median_shift_m']:.0f}m")
+        print(
+            f"  {row['cell_size_m']:6.0f}m: median shift "
+            f"{row['median_shift_m']:.0f}m"
+        )
     print(f"  candidate separation floor: {separation_m:.0f}m")
     print(f"  worst shift among finer grids: {worst_finer_shift:.0f}m")
     print(f"  sites stable under refinement: {sites_stable}")
@@ -201,7 +203,9 @@ def run() -> dict:
             "not. Trust the number, not the pins."
         )
     else:
-        verdict = "neither coverage nor site selection has settled by the finest grid run"
+        verdict = (
+            "neither coverage nor site selection has settled by the finest grid run"
+        )
 
     print(f"\ncoverage spread across resolutions: {coverage_spread:.4f}")
     print(f"verdict: {verdict}")

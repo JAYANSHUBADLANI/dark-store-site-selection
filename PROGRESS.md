@@ -136,15 +136,48 @@ that run and is written to `reports/` as JSON alongside it.
 - That crossover reconciles the repository: everything spatial in it is the
   right tool above roughly 180 stores and the wrong tool below.
 
+### Throughput sourcing: done
+
+- Anchored on Blinkit Q4 FY26, 273.9 million orders across 2,243 dark stores,
+  which is roughly 40,700 orders per store per month. The crossover moves from
+  180-200 stores to **120-140**, and 20 stores serve 14.67% rather than 10.82%.
+- Four caveats recorded in `config/config.yaml`: it is observed average
+  throughput and not a capacity ceiling, it is a national average, it is the
+  market leader, and it comes from several independent outlets reporting the
+  same shareholders letter rather than from the primary filing, which I could
+  not open. The sweep was kept for that reason.
+
+### 125m grid run: done, and it falsified the convergence claim
+
+- **Coverage converges cleanly.** Successive refinements change it by 0.0146,
+  0.0097 then 0.0050, roughly halving, extrapolating to about 92%. The 93.69%
+  the 500m grid reports is mildly optimistic.
+- **Site selection does not.** The median shift is 355m at 250m but 766m at
+  125m, above the 400m candidate separation floor. The earlier "converging"
+  conclusion, drawn from the 250m and 1000m runs alone, was wrong.
+- The bug that hid it: the check took the **minimum** shift across finer grids,
+  so it reported only the grid that happened to agree. It now takes the worst
+  and judges coverage and site selection separately.
+- Honest statement: the optimum value is well determined, the optimum argument
+  is not.
+
+### Memo and map: done
+
+- `docs/decision_memo.md` is the deliverable. Its recommendation is not the one
+  the brief expected: do not run a siting exercise at 20 stores, decide the
+  store count instead, and revisit siting near 120.
+- `scripts/make_interactive_map.py` builds a self contained Folium map with
+  demand, chosen sites, unreached cells and the candidate set. Output is not
+  committed, it regenerates in seconds.
+
 ### Still outstanding
 
-1. **A sourced throughput figure.** The 180 store crossover scales inversely
-   with capacity, so it is a structure rather than an estimate until this is
-   pinned to a citation.
-2. **A 125m run** to confirm the grid convergence trend rather than infer it
-   from two points.
-3. The written decision memo.
-4. An interactive Folium map for exploration, alongside the static figures.
+1. **A capacity ceiling rather than an observed average.** The anchor figure is
+   what stores do, not what they could do, so the real crossover is at fewer
+   than 120 stores by an unknown margin.
+2. **Nothing here models rent, cannibalisation, labour or inventory.** A network
+   optimal for coverage may be poor on all four, and at the store counts that
+   actually matter those are likely the binding trade offs.
 
 ## Open questions and known weaknesses
 

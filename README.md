@@ -573,14 +573,21 @@ evidence supports.
 ## Running it
 
 ```bash
-make setup     # virtualenv and dependencies
-make fetch     # download the 47 MB GHS-POP tile into data/raw/
-make phase1    # boundary, grid, population, demand surface
-make phase2    # candidates, travel time matrices, straight line comparison
-make phase3    # the optimisation and the straight line penalty
-make figures   # every figure in this README
-make test      # 18 tests
+make setup       # virtualenv and dependencies
+make fetch       # download the 47 MB GHS-POP tile into data/raw/
+make phase1      # boundary, grid, population, demand surface
+make phase2      # candidates, travel time matrices, straight line comparison
+make phase3      # the optimisation and the straight line penalty
+make phase4      # sensitivity sweep and site stability
+make phase5      # capacity, and where the binding constraint flips
+make robustness  # the four checks that corrected the headline
+make grid        # rerun at 125m, 250m, 500m and 1000m
+make figures     # every figure in this README
+make map         # interactive map for exploring, not committed
+make test        # 23 tests
 ```
+
+`make demo` runs fetch through figures end to end.
 
 Raw rasters, the cached road network and the travel time matrices stay out of
 version control. `scripts/fetch_data.py` reproduces the only external download.
@@ -600,14 +607,22 @@ scripts/               one runner per phase, plus six robustness checks:
                        alternate optima, circuity calibration, spatial
                        stability, effective radius, grid resolution,
                        binding constraint
-reports/               summary JSON per phase, figures
-tests/                 18 tests
+docs/decision_memo.md  the memo this was built to produce
+reports/               summary JSON per phase and per check, figures
+tests/                 23 tests
 ```
 
 ## Status
 
 Phases 1 to 5 and six robustness checks are complete, and every number above
 comes from a run. See `PROGRESS.md` for what is left.
+
+## The memo
+
+`docs/decision_memo.md` is the deliverable this was built to produce. Its
+recommendation is not the one the brief expected: do not spend a month choosing
+20 locations, because at 20 stores the location choice does not change what they
+deliver.
 
 ## Data sources
 
@@ -620,6 +635,11 @@ comes from a run. See `PROGRESS.md` for what is left.
 - **City boundary**: OSM Nominatim, "Bengaluru, Karnataka, India".
 - **Household size**: Census of India 2011, House Listing and Housing Census,
   Karnataka urban average.
+- **Store throughput anchor**: Blinkit Q4 FY26, 273.9 million orders across
+  2,243 dark stores, from Eternal Ltd's Q4 FY26 shareholders letter as reported
+  in April 2026. Taken from several independent outlets reporting the same
+  letter rather than read off the primary filing, which I could not open. See
+  the caveats in `config/config.yaml`.
 
 ## License
 
