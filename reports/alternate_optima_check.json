@@ -1,0 +1,18 @@
+{
+  "trials": 20,
+  "perturbation": 0.001,
+  "network_optimum_share": 0.9369279288769194,
+  "straight_line_actual_share": {
+    "min": 0.5865461905643569,
+    "median": 0.6317626403367697,
+    "max": 0.6317626403367697,
+    "mean": 0.6204585278936666,
+    "std": 0.01957929708592629
+  },
+  "straight_line_claimed_share_median": 0.9880548943100997,
+  "worst_case_penalty": 0.3503817383125626,
+  "best_case_penalty": 0.3051652885401498,
+  "any_trial_reaches_network_optimum": false,
+  "distinct_sites_used_across_trials": 21,
+  "sites_common_to_every_trial": 19
+}

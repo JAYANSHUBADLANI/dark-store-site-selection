@@ -1,0 +1,36 @@
+{
+  "city": "Bengaluru",
+  "boundary_area_km2": 717.2092595977484,
+  "cell_size_m": 500.0,
+  "adoption_variant": "base",
+  "population_source": "GHS_POP_E2020_GLOBE_R2023A_54009_100_V1_0_R8_C26.tif",
+  "population_vintage": 2020,
+  "population": {
+    "cells": 2867.0,
+    "populated_cells": 2845.0,
+    "total_population": 11874821.277798448,
+    "median_populated_cell": 449.68116092681885,
+    "max_cell": 34907.811606407166,
+    "raster_pixels_used": 106149.0,
+    "capture_ratio_vs_window": 0.9095467432216826
+  },
+  "low_demand_filter": {
+    "threshold_population": 25.0,
+    "cells_before": 2867,
+    "cells_after": 2597,
+    "cells_dropped": 270,
+    "population_share_dropped": 0.0002056966152845839,
+    "orders_share_dropped": 1.6383723216061042e-05
+  },
+  "demand": {
+    "adoption_variant": "base",
+    "cells": 2597,
+    "total_population": 11872378.667254495,
+    "total_households": 2761018.2947103474,
+    "mean_adoption_rate_pop_weighted": 0.251146289038517,
+    "total_orders_per_month": 5547355.989471666,
+    "max_cell_orders_per_month": 18184.53441822141
+  },
+  "runtime_s": 4.9,
+  "output_file": "data/processed/demand_surface.gpkg"
+}

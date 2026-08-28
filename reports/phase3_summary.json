@@ -1,0 +1,130 @@
+{
+  "n_stores": 20,
+  "threshold_min": 10.0,
+  "total_demand_orders_per_month": 5547355.989471666,
+  "network_exact": {
+    "method": "exact_cbc",
+    "status": "Optimal",
+    "proved_optimal": true,
+    "hit_time_limit": false,
+    "mip_gap_requested": 0.01,
+    "selected": [
+      9,
+      29,
+      48,
+      92,
+      93,
+      109,
+      118,
+      126,
+      166,
+      205,
+      224,
+      238,
+      241,
+      243,
+      251,
+      261,
+      322,
+      339,
+      358,
+      366
+    ],
+    "covered_demand": 5197472.757958662,
+    "total_demand": 5547355.989471666,
+    "coverage_share": 0.9369279288769194,
+    "covered_cells": 1041,
+    "unreachable_cells": 1129,
+    "objective_value": 5197472.757958665,
+    "runtime_s": 1.1
+  },
+  "network_greedy": {
+    "method": "greedy",
+    "selected": [
+      13,
+      16,
+      40,
+      51,
+      66,
+      82,
+      131,
+      141,
+      153,
+      162,
+      168,
+      188,
+      222,
+      224,
+      261,
+      294,
+      302,
+      322,
+      358,
+      397
+    ],
+    "covered_demand": 4935997.262069905,
+    "total_demand": 5547355.989471666,
+    "coverage_share": 0.8897927718065942,
+    "covered_cells": 944,
+    "runtime_s": 0.02
+  },
+  "greedy_optimality_gap": 0.050308199401020555,
+  "straight_line_solution": {
+    "selected": [
+      21,
+      35,
+      67,
+      98,
+      100,
+      214,
+      249,
+      275,
+      350,
+      352,
+      355,
+      356,
+      360,
+      367,
+      385,
+      388,
+      389,
+      392,
+      396,
+      398
+    ],
+    "claimed_coverage_share": 0.9880548943100997,
+    "actual_coverage_share": 0.5865461905643569,
+    "overstatement": 0.4015087037457429,
+    "coverage_lost_vs_network_optimum": 0.3503817383125626,
+    "orders_per_month_lost": 1943692.2346296879,
+    "sites_in_common_with_network_optimum": [],
+    "n_sites_in_common": 0
+  },
+  "coverage_curve": [
+    {
+      "n_stores": 5,
+      "coverage_share": 0.4281702529245036
+    },
+    {
+      "n_stores": 10,
+      "coverage_share": 0.6759300798409769
+    },
+    {
+      "n_stores": 15,
+      "coverage_share": 0.8068508363947015
+    },
+    {
+      "n_stores": 20,
+      "coverage_share": 0.8897927718065942
+    },
+    {
+      "n_stores": 30,
+      "coverage_share": 0.9699355739655019
+    },
+    {
+      "n_stores": 40,
+      "coverage_share": 0.9813222270312314
+    }
+  ],
+  "runtime_s": 2.5
+}

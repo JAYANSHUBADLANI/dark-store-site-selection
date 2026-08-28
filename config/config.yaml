@@ -1,0 +1,130 @@
+# Every assumption this project makes lives in this file.
+# Nothing numeric belongs in the source code. If a number matters, it is here,
+# with the source it came from and the date that source was published.
+
+city:
+  name: Bengaluru
+  # Passed to OSM Nominatim geocoding. Verified to resolve to the BBMP
+  # municipal area, roughly 714 sq km.
+  osm_query: "Bengaluru, Karnataka, India"
+  # Used to resolve which GHSL tile to download. Roughly the city centre.
+  reference_point: [77.5946, 12.9716]
+  # UTM zone 43N. Metric, and the right zone for Bengaluru at 77.6 E.
+  # All distance and area work happens in this CRS, never in degrees.
+  projected_crs: "EPSG:32643"
+  geographic_crs: "EPSG:4326"
+
+grid:
+  # Analysis cell size in metres. 500m is the base case. The conclusion is
+  # re-run at coarser and finer resolutions to show it is not an artefact of
+  # this choice, see sensitivity.grid_resolutions_m below.
+  cell_size_m: 500
+  # Cells whose population falls below this are dropped before the travel time
+  # matrix is built. They contribute almost no demand and they dominate the
+  # matrix cost. The share of total population dropped is reported.
+  min_population_per_cell: 25
+
+population:
+  # JRC Global Human Settlement Layer, GHS-POP R2023A.
+  # Residential population per 100m cell, epoch 2020, Mollweide (ESRI:54009).
+  # Product page: https://ghsl.jrc.ec.europa.eu/ghs_pop2023.php
+  # Citation: Schiavina, Freire, Carioli, MacManus (2023), European Commission JRC.
+  # Chosen over WorldPop for two practical reasons: it is distributed as
+  # 1000km tiles, so one 47 MB tile covers this city instead of a 466 MB
+  # national raster, and the JRC host serves it several times faster.
+  ghsl_base_url: "https://jeodpp.jrc.ec.europa.eu/ftp/jrc-opendata/GHSL/GHS_POP_GLOBE_R2023A/GHS_POP_E2020_GLOBE_R2023A_54009_100/V1-0/tiles"
+  ghsl_product: "GHS_POP_E2020_GLOBE_R2023A_54009_100_V1_0"
+  raster_filename: "GHS_POP_E2020_GLOBE_R2023A_54009_100_V1_0_R8_C26.tif"
+  raster_crs: "ESRI:54009"
+  # The raster models the year 2020. Bengaluru has grown since, so every
+  # absolute population and order figure in this project is understated on an
+  # unknown but real margin. This is stated in the README rather than corrected
+  # with an invented growth factor.
+  vintage_year: 2020
+  resolution_note: "100m, Mollweide equal area"
+
+demand:
+  # The chain from people to orders. Each step is a proxy, and the weakest
+  # link is adoption_rate_by_density, which has no public source at grid level.
+  #
+  # Average urban household size, Karnataka. Census of India 2011, House
+  # Listing and Housing Census tables.
+  household_size: 4.3
+
+  # Quick commerce adoption is not uniform across a city. It concentrates in
+  # dense, higher income, younger neighbourhoods. There is no public grid level
+  # adoption dataset, so density is used as the only available proxy, with the
+  # bands below applied to population density per sq km.
+  #
+  # THESE FOUR NUMBERS ARE THE MOST UNCERTAIN INPUTS IN THE PROJECT.
+  # They are judgemental, they are not sourced, and the sensitivity analysis
+  # varies them deliberately because the site selection depends on them.
+  adoption_rate_by_density:
+    - {min_density_per_km2: 0,     rate: 0.02}
+    - {min_density_per_km2: 5000,  rate: 0.08}
+    - {min_density_per_km2: 15000, rate: 0.18}
+    - {min_density_per_km2: 30000, rate: 0.28}
+
+  # Orders per adopting household per month. Company disclosures report order
+  # volumes and user counts but not a clean per household frequency, so this is
+  # an assumption with a sensitivity range attached.
+  orders_per_adopting_household_per_month: 8.0
+
+network:
+  # Quick commerce riders use two wheelers. OSMnx pulls a drivable network,
+  # which is the closest available match: two wheelers use the same roads, but
+  # they filter through congestion in ways a car cannot, and they also use
+  # links a car network does not contain.
+  osm_network_type: "drive"
+  # OSM maxspeed tags are free flow legal limits, not observed speeds, and most
+  # Bengaluru links are untagged. A single effective speed is used instead,
+  # chosen to represent realistic two wheeler progress in mixed city traffic,
+  # and it is the first thing the sensitivity analysis varies.
+  effective_speed_kmph: 18.0
+  # The delivery promise, in minutes of rider travel time. This is travel time
+  # only. It excludes picking, packing, handover and waiting at the door, which
+  # in practice consume a large share of a ten minute promise.
+  delivery_threshold_min: 10.0
+  # Dijkstra is run from each candidate with this cutoff, so anything beyond the
+  # promise is never expanded. Set slightly above the threshold so sensitivity
+  # runs at a longer promise do not need a rebuild.
+  matrix_cutoff_min: 16.0
+
+candidates:
+  # A dark store cannot sit on an arbitrary grid point. Candidates are drawn
+  # from OSM land use and building tags that plausibly host one.
+  osm_landuse_tags: ["retail", "commercial", "industrial"]
+  # Minimum separation between two candidate sites, in metres. Without this the
+  # candidate set clusters in a few commercial strips and the optimiser wastes
+  # its budget on near duplicates.
+  min_separation_m: 400
+  # Hard cap on candidate count. The travel time matrix cost is linear in this,
+  # and the MIP cost is worse than linear.
+  max_candidates: 400
+
+optimisation:
+  # Number of dark stores to place. This is the budget the memo answers for.
+  n_stores: 20
+  solver: "CBC"
+  # Seconds. If the solve hits this without proving optimality, that fact is
+  # reported rather than presenting the incumbent as optimal.
+  time_limit_s: 300
+  mip_gap: 0.01
+
+sensitivity:
+  # Every scenario is a single parameter change from the base case, so the
+  # effect is attributable. Site stability across these runs is the headline
+  # sensitivity output.
+  effective_speed_kmph: [12.0, 15.0, 18.0, 22.0, 26.0]
+  delivery_threshold_min: [8.0, 10.0, 12.0, 15.0]
+  n_stores: [5, 10, 15, 20, 30, 40]
+  grid_resolutions_m: [250, 500, 1000]
+  # Adoption curve shifted flatter and steeper than the base case, to test how
+  # much the answer depends on the least defensible assumption in the project.
+  adoption_variants: ["flat", "base", "steep"]
+
+output:
+  reports_dir: "reports"
+  figures_dir: "reports/figures"
+  artifacts_dir: "artifacts"
+  random_seed: 20260828

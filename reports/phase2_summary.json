@@ -1,0 +1,57 @@
+{
+  "network": {
+    "nodes": 155545,
+    "edges": 393912,
+    "directed_edge_length_km": 24251.1,
+    "undirected_centreline_km": 13003.6,
+    "effective_speed_kmph": 18.0
+  },
+  "candidates": {
+    "parcels_fetched": 3491,
+    "after_separation_thinning": 888,
+    "min_separation_m": 400.0,
+    "final_candidates": 400,
+    "capped_at": 400,
+    "was_capped": true,
+    "landuse_mix": {
+      "commercial": 235,
+      "industrial": 126,
+      "retail": 39
+    }
+  },
+  "snapping": {
+    "candidate_median_m": 47.82041735754703,
+    "candidate_p95_m": 167.49214772875786,
+    "candidate_max_m": 472.29681126083796,
+    "demand_median_m": 40.06563113508708,
+    "demand_p95_m": 246.161322150053,
+    "demand_max_m": 1643.1894312473726
+  },
+  "matrix": {
+    "shape": [
+      400,
+      2597
+    ],
+    "cutoff_min": 16.0,
+    "build_seconds": 5.2,
+    "nodes_expanded": 4060456,
+    "nodes_possible": 62218000,
+    "pruning_ratio": 0.9347382429522003
+  },
+  "straight_line_comparison": {
+    "threshold_min": 10.0,
+    "speed_kmph": 18.0,
+    "pairs": 1038800,
+    "pairs_disagreeing": 22180,
+    "pair_disagreement_share": 0.02135155949172122,
+    "straight_line_only_pairs": 22180,
+    "network_only_pairs": 0,
+    "mean_candidate_reach_network": 54.0675,
+    "mean_candidate_reach_straight": 109.5175,
+    "reach_inflation_factor": 2.025569889489989,
+    "demand_reachable_by_any_network": 0.98241127983278,
+    "demand_reachable_by_any_straight": 0.9881569875976853,
+    "median_network_over_straight_time_ratio": 1.3185687653141642
+  },
+  "runtime_s": 17.9
+}

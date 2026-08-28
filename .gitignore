@@ -1,0 +1,27 @@
+# Raw and derived data stay out of version control.
+data/raw/*
+!data/raw/.gitkeep
+data/interim/*
+!data/interim/.gitkeep
+data/processed/*
+!data/processed/.gitkeep
+
+# Large generated outputs. Figures and summary tables are committed, the
+# intermediate matrices are not.
+artifacts/*.npz
+artifacts/*.parquet
+reports/*.html
+
+*.partial
+
+# Python
+.venv/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.ipynb_checkpoints/
+*.egg-info/
+
+# OS
+.DS_Store
+cache/
