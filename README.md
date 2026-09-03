@@ -1,5 +1,7 @@
 # Dark Store Site Selection, Bengaluru
 
+[![tests](https://github.com/JAYANSHUBADLANI/dark-store-site-selection/actions/workflows/pytest.yml/badge.svg)](https://github.com/JAYANSHUBADLANI/dark-store-site-selection/actions/workflows/pytest.yml)
+
 Where should a quick commerce operator put its next 20 dark stores so that the
 most demand sits inside a 10 minute delivery promise.
 
